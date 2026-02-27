@@ -54,6 +54,9 @@
             "type": 3,
             "api": "csp_Bili",
             "playerType": 2,
+            "searchable": 0,
+            "quickSearch": 0,
+            "changeable": 0,
             "ext": {
                 "json": "https://img2.gelonghui.com/library/2b4eb-8fb08a6b-f9f1-48d8-816a-1bc712a85fefnull",
                 "cookie": ""
@@ -138,6 +141,88 @@
             "changeable": 1,
             "ext": "rfOb1uAWbkRHp7hdxprG9un3+S3T18333j8hL4ryEFdPZxse8yYwoKFyJOlU2M9/q2OcL8NQxT0k5GV9Quw0AIzUurGBVyPqCLrdirfpAz+n0Qh7PVBWo8uxWhO1Bs1MCYA1oiM="
         },
+   
+    {
+      "key": "瓜子",
+      "name": "🍉瓜子┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1,
+      "ext": {
+        "sp": "Guazi",
+        "danmu": true
+      },
+      "timeout": 10
+    },
+    {
+      "key": "热播弹幕版",
+      "name": "📺热播┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1,
+      "ext": {
+        "sp": "TianTian",
+        "danmu": true,
+        "site": 0
+      },
+      "timeout": 10
+    },
+    {
+      "key": "雄鹰弹幕版",
+      "name": "🦅雄鹰┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "ext": {
+        "sp": "XiongYing",
+        "danmu": true
+      },
+      "timeout": 10
+    },
+    {
+      "key": "奇奇弹幕版",
+      "name": "🐵奇奇┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "ext": {
+        "sp": "QiQi",
+        "danmu": true
+      },
+      "timeout": 10
+    },
+    {
+      "key": "厂长弹幕版",
+      "name": "📔厂长┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "ext": {
+        "sp": "Czzy",
+        "danmu": true
+      },
+      "timeout": 10
+    },
         {
             "key": "猫抓",
             "name": "🐱┃猫抓┃APP",
