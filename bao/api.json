@@ -237,8 +237,8 @@
 			"jar":"./jar/fty.jar",
             "api": "csp_AppSxGuard",
             "timeout": 10,
-            "searchable": 1,
-            "quickSearch": 1,
+            "searchable": 0,
+            "quickSearch": 0,
             "changeable": 1,
             "ext": "rfOX1voDIQhH8epBwpmIsuStr2HSytK11WwwcM/+XB8SbkBB4XYk/L52LroCiYRhoDrRLJ4ZkCh5q2RxCb5yUs6B5aCQVGSkR6zDgKLrFSDulg=="
         },
