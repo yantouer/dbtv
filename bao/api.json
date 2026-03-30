@@ -87,17 +87,6 @@
             "ext": "http://v.rbotv.cn"
 		},
         {
-            "key": "厂长",
-            "name": "🏭┃厂长┃影视",
-            "type": 3,
-            "playerType": "2",
-            "api": "csp_Czsapp",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "ext": "https://www.czzymovie.com/"
-        },
-        {
         "key": "糯米",
         "name": "🍓糯米┃弹幕",
         "type": 3,
@@ -176,22 +165,6 @@
       "timeout": 10
     },
     {
-      "key": "雄鹰弹幕版",
-      "name": "🦅雄鹰┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "XiongYing",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-    {
       "key": "奇奇弹幕版",
       "name": "🐵奇奇┃弹幕",
       "type": 3,
@@ -235,18 +208,6 @@
             "changeable": 1,
             "ext": "rfOX1voDIQhH8epBwpmIsuStr2HSytK11WwwcM/+XB8SbkBB4XYk/L52LroCiYRhoDrRLJ4ZkCh5q2RxCb5yUs6B5aCQVGSkR6zDgKLrFSDulg=="
         },
-		{
-            "key": "橘子",
-            "name": "🍊橘子┃多线",
-            "type": 3,
-			"jar":"./jar/fty.jar",
-            "api": "csp_AppSxGuard",
-            "timeout": 10,
-            "searchable": 1,
-            "quickSearch": 1,
-            "changeable": 1,
-            "ext": "rfOb1uAWbkRHp7hdxprG9un3+TXe0NPv1yt7LM60XkwYLA1No3EluLI1d/gV1t5vq2+PaJZO0X8y4XhhFKorB8fL8quaRzegVrmV3P39FC7u1UYsIlVb07zwEm/4Hc0/c9s1snJBF1/lWqakhRaj"
-        },
         {
 	        "key": "csp_XYQHiker_农民影视",
 	        "name":"🍺农民┃影视",
@@ -275,13 +236,6 @@
 	        "api":"csp_TTian",
 	        "playerType":2,
 	        "ext":"7lj763gg0939791h1l3888jig44gi291li"
-        },
-        {
-            "key": "兔子",
-            "name": "🐇┃兔子┃APP",
-            "type": 3,
-            "api": "csp_AppGet",
-            "ext": "https://dyyztvappapigoodgx.68.gy:12689/ciwk28vu38io8/apiurl.txt|dyyztvapiappyyds"
         },
         {
             "key": "永永",
