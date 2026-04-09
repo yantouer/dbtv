@@ -162,18 +162,6 @@
         "timeout": 10
         },
         {
-            "key": "原创",
-            "name": "☀原创┃秒播",
-            "type": 3,
-			"jar":"./jar/fty260321.jar",
-            "api": "csp_YCyzGuard",
-            "timeout": 15,
-            "playerType": 1,
-            "searchable": 1,
-            "quickSearch": 1,
-            "changeable": 1
-        },
-        {
                 "key": "csp_XYQHiker_农民影视",
                 "name":"🍺农民┃影视",
                 "type":3,
