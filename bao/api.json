@@ -22,20 +22,19 @@
                 "type": "list"
             }
         },  
-        {
-            "key": "超全",
-            "name": "⚽超全┃看球",
+      {
+            "key": "看球",
+            "name": "⚽手机┃看球",
             "type": 3,
 			"jar":"./jar/fty260321.jar",
-            "api": "csp_ZbzGuard",
+            "api": "csp_KanqiuGuard",
+            "timeout": 10,
             "searchable": 0,
-            "quickSearch": 0,
             "changeable": 0,
             "style": {
                 "type": "list"
-            },
-            "ext": "uqGL1fpJNAUf8fdTwZCE5qSp+Q=="
-        }, 
+            }
+        },
         {
             "key": "living",
             "name": "🐼┃游戏┃直播",
