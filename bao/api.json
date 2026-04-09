@@ -21,25 +21,21 @@
             "style": {
                 "type": "list"
             }
-        },
+        },  
         {
-      "key": "瓜子看球",
-      "name": "⚽瓜子┃看球",
-      "type": 3,
-      "jar":"./jar/ok260321.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 0,
-      "quickSearch": 0,
-      "changeable": 0,
-      "style": {
-        "type": "list"
-      },
-      "ext": {
-        "sp": "GzSport"
-      },
-      "timeout": 10
-    },
-    
+            "key": "超全",
+            "name": "⚽超全┃看球",
+            "type": 3,
+			"jar":"./jar/fty260321.jar",
+            "api": "csp_ZbzGuard",
+            "searchable": 0,
+            "quickSearch": 0,
+            "changeable": 0,
+            "style": {
+                "type": "list"
+            },
+            "ext": "uqGL1fpJNAUf8fdTwZCE5qSp+Q=="
+        }, 
         {
             "key": "living",
             "name": "🐼┃游戏┃直播",
