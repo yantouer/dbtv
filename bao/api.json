@@ -223,7 +223,7 @@
 	        "key":"柠檬",
 	        "name":"🍺柠檬┃影视",
 	        "type":3,
-	        "jar":"./jar/qj.jar",
+	        "jar":"./jar/qj260315.jar",
 	        "api":"csp_Nmvod",
 	        "playerType":2,
 	        "ext":"7lj763gg402i7942503g839jg74h8h88highi40799jh6i6k454419l0l5184k0g549h0kg2i01i838i2h42g891lgg1"
@@ -232,10 +232,45 @@
 	        "key":"天天",
 	        "name":"🍺天天┃影视",
 	        "type":3,
-            "jar":"./jar/qj.jar",
+            "jar":"./jar/qj260315.jar",
 	        "api":"csp_TTian",
+            "searchable":1,
+            "quickSearch":1,
 	        "playerType":2,
 	        "ext":"7lj763gg0939791h1l3888jig44gi291li"
+        },
+        {
+            "key":"剧评",
+            "name":"🍺剧评┃影视",
+            "type":3,
+            "jar":"./jar/qj260315.jar",
+            "api":"csp_Jpys",
+            "searchable":1,
+            "quickSearch":1,
+            "playerType":1,
+            "ext":"7lj763gg402i7942463j9j9jh8579590k3hjii5gi4i73l2k5l"
+        },
+        {
+            "key":"永夜",
+            "name":"🍺永夜┃影视",
+            "type":3,
+            "jar":"./jar/qj260315.jar",
+            "api":"csp_Xdai",
+            "searchable":1,
+            "quickSearch":1,
+            "playerType":2,
+            "ext":"7lj763gg0939790i413gjh9kk011jijiggll990k9li73l224k770ik0j10l502j2j9l798lhj778hh33g018h94k5j400kij3567j7gji97kkk4118421g03lll"
+        },
+        {
+            "key":"优质",
+            "name":"🍺优质┃影视",
+            "type":3,
+            "jar":"./jar/qj260315.jar",
+            "api":"csp_Qiji",
+            "searchable":1,
+            "quickSearch":1,
+            "playerType":2,
+            "ext":"7lj763gg402i7942433293i0g9458881hig7j94k818g326i51491kljlk134k401g9g54gk8j5i9097751kh28kh9kj11kjl92k6046l0gkj8l630892glj67g61h48g3kjiigkg0263k6h955430429ill43307gk8k0602hh09lh0j6jh7h"
         },
         {
             "key": "永永",
@@ -259,14 +294,7 @@
             "api": "csp_Gz360",
             "playerType": 2
         },
-        {
-            "key": "3Q",
-            "name": "三可┃影视",
-            "type": 3,
-            "searchable": 1,
-            "quickSearch": 1,
-            "api": "csp_App3Q"
-        },
+
         {
             "key": "csp_AppXY",
             "name": "🎀️┃星牙┃短剧",
