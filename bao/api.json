@@ -260,6 +260,14 @@
             "playerType": 2
         },
         {
+            "key": "3Q",
+            "name": "三可┃影视",
+            "type": 3,
+            "searchable": 1,
+            "quickSearch": 1,
+            "api": "csp_App3Q"
+        },
+        {
             "key": "csp_AppXY",
             "name": "🎀️┃星牙┃短剧",
             "type": 3,
