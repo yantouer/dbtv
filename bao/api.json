@@ -118,19 +118,6 @@
       },
       "timeout": 10
     },
-        {
-            "key": "剧圈",
-            "name": "🐻剧圈┃多线",
-            "type": 3,
-			"jar":"./jar/fty.jar",
-            "api": "csp_AppSxGuard",
-            "timeout": 10,
-            "searchable": 1,
-            "quickSearch": 1,
-            "changeable": 1,
-            "ext": "rfOb1uAWbkRHp7hdxprG9un3+S3T18333j8hL4ryEFdPZxse8yYwoKFyJOlU2M9/q2OcL8NQxT0k5GV9Quw0AIzUurGBVyPqCLrdirfpAz+n0Qh7PVBWo8uxWhO1Bs1MCYA1oiM="
-        },
-   
     {
       "key": "瓜子",
       "name": "🍉瓜子┃弹幕",
@@ -144,23 +131,6 @@
       "ext": {
         "sp": "Guazi",
         "danmu": true
-      },
-      "timeout": 10
-    },
-    {
-      "key": "热播弹幕版",
-      "name": "📺热播┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 1,
-      "filterable": 1,
-      "ext": {
-        "sp": "TianTian",
-        "danmu": true,
-        "site": 0
       },
       "timeout": 10
     },
@@ -196,18 +166,6 @@
       },
       "timeout": 10
     },
-        {
-            "key": "猫猫",
-            "name": "🐟猫猫┃多线",
-            "type": 3,
-			"jar":"./jar/fty.jar",
-            "api": "csp_AppSxGuard",
-            "timeout": 10,
-            "searchable": 0,
-            "quickSearch": 0,
-            "changeable": 1,
-            "ext": "rfOX1voDIQhH8epBwpmIsuStr2HSytK11WwwcM/+XB8SbkBB4XYk/L52LroCiYRhoDrRLJ4ZkCh5q2RxCb5yUs6B5aCQVGSkR6zDgKLrFSDulg=="
-        },
         {
 	        "key": "csp_XYQHiker_农民影视",
 	        "name":"🍺农民┃影视",
