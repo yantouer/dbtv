@@ -13,7 +13,7 @@
             "key": "88",
             "name": "⚽体育┃直播",
             "type": 3,
-            "jar":"./jar/fty.jar",
+            "jar":"./jar/fty260321.jar",
             "api": "csp_Sir88Guard",
             "timeout": 10,
             "searchable": 0,
@@ -117,164 +117,189 @@
         "danmu": true
       },
       "timeout": 10
-    },
-    {
-      "key": "瓜子",
-      "name": "🍉瓜子┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 1,
-      "filterable": 1,
-      "ext": {
-        "sp": "Guazi",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-    {
-      "key": "奇奇弹幕版",
-      "name": "🐵奇奇┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "QiQi",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-    {
-      "key": "厂长弹幕版",
-      "name": "📔厂长┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "Czzy",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-        {
-	        "key": "csp_XYQHiker_农民影视",
-	        "name":"🍺农民┃影视",
-            "type":3,
-	        "jar":"./jar/xyq.jar",
-	        "api":"csp_XYQHiker",
-	        "searchable":1,
-	        "quickSearch":1,
-	        "filterable":1,
-	        "ext":"./json/农民影视.json"
         },
         {
-	        "key":"柠檬",
-	        "name":"🍺柠檬┃影视",
-	        "type":3,
-	        "jar":"./jar/qj260315.jar",
-	        "api":"csp_Nmvod",
-	        "playerType":2,
-	        "ext":"7lj763gg402i7942503g839jg74h8h88highi40799jh6i6k454419l0l5184k0g549h0kg2i01i838i2h42g891lgg1"
+        "key": "瓜子",
+        "name": "🍉瓜子┃弹幕",
+        "type": 3,
+        "jar":"./jar/ok.jar",
+        "api": "csp_AweSomeGuard",
+        "searchable": 1,
+        "quickSearch": 1,
+        "changeable": 1,
+        "filterable": 1,
+        "ext": {
+            "sp": "Guazi",
+            "danmu": true
+        },
+        "timeout": 10
         },
         {
-	        "key":"天天",
-	        "name":"🍺天天┃影视",
-	        "type":3,
-            "jar":"./jar/qj260315.jar",
-	        "api":"csp_TTian",
-            "searchable":1,
-            "quickSearch":1,
-	        "playerType":2,
-	        "ext":"7lj763gg0939791h1l3888jig44gi291li"
+        "key": "奇奇弹幕版",
+        "name": "🐵奇奇┃弹幕",
+        "type": 3,
+        "jar":"./jar/ok.jar",
+        "api": "csp_AweSomeGuard",
+        "searchable": 1,
+        "quickSearch": 1,
+        "changeable": 0,
+        "filterable": 1,
+        "ext": {
+            "sp": "QiQi",
+            "danmu": true
+        },
+        "timeout": 10
         },
         {
-            "key":"永夜",
-            "name":"🍺永夜┃影视",
-            "type":3,
-            "jar":"./jar/qj260315.jar",
-            "api":"csp_Xdai",
-            "searchable":1,
-            "quickSearch":1,
-            "playerType":2,
-            "ext":"7lj763gg0939790i413gjh9kk011jijiggll990k9li73l224k770ik0j10l502j2j9l798lhj778hh33g018h94k5j400kij3567j7gji97kkk4118421g03lll"
+        "key": "厂长弹幕版",
+        "name": "📔厂长┃弹幕",
+        "type": 3,
+        "jar":"./jar/ok.jar",
+        "api": "csp_AweSomeGuard",
+        "searchable": 1,
+        "quickSearch": 1,
+        "changeable": 0,
+        "filterable": 1,
+        "ext": {
+            "sp": "Czzy",
+            "danmu": true
+        },
+        "timeout": 10
         },
         {
-            "key":"Dygang",
-            "name":"🍺电影港┃影视",
-            "jar":"./jar/qj260315.jar",
-            "type":3,
-            "api":"csp_Dygang",
-            "searchable":1,
-            "quickSearch":1,
-            "filterable":0
-        },
-        {
-            "key": "永永",
-            "name": "♾️┃永永┃APP",
+            "key": "立播",
+            "name": "🌟立播┃秒播",
             "type": 3,
-            "api": "csp_AppGet",
-            "ext": "https://bind.315999.xyz/89.txt|#getapp@TMD@2025|120"
+			"jar":"./jar/fty260321.jar",
+            "api": "csp_LibvioGuard",
+            "timeout": 10,
+            "searchable": 1,
+            "quickSearch": 1,
+            "changeable": 1,
+            "ext": {
+                "Cloud-drive": "http://127.0.0.1:9978/file/TVBox/Cloud-drive.txt"
+            }
         },
         {
-            "key": "csp_SaoHuo",
-            "name": "🔥┃火火┃影视",
+            "key": "奶酪",
+            "name": "🧀奶酪┃秒播",
             "type": 3,
-            "api": "csp_SaoHuo",
-            "playerType": 2,
-            "ext": "https://shdy5.us"
+			"jar":"./jar/fty260321.jar",
+            "api": "csp_T4Guard",
+            "searchable": 1,
+            "quickSearch": 1,
+            "changeable": 0,
+            "ext": "rfOIzPkSUkANv6AT2prC8en3+TzKx9TnlT8vaY37HhtYfAQe6C5xqrVuJPhQwYV6r3eRdMBGm3Qm6Th+BushR86B6KqJGXDsHazHw7alBG/7zUxkN1tK/NypRxnpBNoeUtpw4jcCGhytI75yO4g4zG6SOPA0RSwhksM0IF2friAkrHCWoW3v+0mdw6sjz4t4XB1Df7yL/R5cfaA/5LQYq3I8OkvMrJMU9Q1P7JXwx7NSF2zTyH/ANVmZ4u5m567DW1KVG7OuQjXPjZiOXTYk0+wjpfBRTf19yIq6q/C76k2Fs80joAMPw0ueDR+QHxtuDcTom2rmHkI1Fonkzi6BotbpUcbSi4PiIgmfdbvVwhG6Z+i4nvt+IYa48l5aLA7PLgDiERpuOs31aHaXlgFswT87XyTb8QaF4CuzKWJuXptwNTjvXAS9KHdxH49Ay+hfBAB2bCvUf4CMoldF2wZUv0mI2qY966erFpOFg+FOc7t88EUH8j8ACXQtHJiKC9RQ+SaLIF0="
         },
         {
-            "key": "csp_Gz360",
-            "name": "🍉┃瓜子┃影视",
-            "type": 3,
-            "api": "csp_Gz360",
-            "playerType": 2
-        },
+                "key": "csp_XYQHiker_农民影视",
+                "name":"🍺农民┃影视",
+                "type":3,
+                "jar":"./jar/xyq.jar",
+                "api":"csp_XYQHiker",
+                "searchable":1,
+                "quickSearch":1,
+                "filterable":1,
+                "ext":"./json/农民影视.json"
+            },
+            {
+                "key":"柠檬",
+                "name":"🍺柠檬┃影视",
+                "type":3,
+                "jar":"./jar/qj260315.jar",
+                "api":"csp_Nmvod",
+                "playerType":2,
+                "ext":"7lj763gg402i7942503g839jg74h8h88highi40799jh6i6k454419l0l5184k0g549h0kg2i01i838i2h42g891lgg1"
+            },
+            {
+                "key":"天天",
+                "name":"🍺天天┃影视",
+                "type":3,
+                "jar":"./jar/qj260315.jar",
+                "api":"csp_TTian",
+                "searchable":1,
+                "quickSearch":1,
+                "playerType":2,
+                "ext":"7lj763gg0939791h1l3888jig44gi291li"
+            },
+            {
+                "key":"永夜",
+                "name":"🍺永夜┃影视",
+                "type":3,
+                "jar":"./jar/qj260315.jar",
+                "api":"csp_Xdai",
+                "searchable":1,
+                "quickSearch":1,
+                "playerType":2,
+                "ext":"7lj763gg0939790i413gjh9kk011jijiggll990k9li73l224k770ik0j10l502j2j9l798lhj778hh33g018h94k5j400kij3567j7gji97kkk4118421g03lll"
+            },
+            {
+                "key":"Dygang",
+                "name":"🍺电影港┃影视",
+                "jar":"./jar/qj260315.jar",
+                "type":3,
+                "api":"csp_Dygang",
+                "searchable":1,
+                "quickSearch":1,
+                "filterable":0
+            },
+            {
+                "key": "永永",
+                "name": "♾️┃永永┃APP",
+                "type": 3,
+                "api": "csp_AppGet",
+                "ext": "https://bind.315999.xyz/89.txt|#getapp@TMD@2025|120"
+            },
+            {
+                "key": "csp_SaoHuo",
+                "name": "🔥┃火火┃影视",
+                "type": 3,
+                "api": "csp_SaoHuo",
+                "playerType": 2,
+                "ext": "https://shdy5.us"
+            },
+            {
+                "key": "csp_Gz360",
+                "name": "🍉┃瓜子┃影视",
+                "type": 3,
+                "api": "csp_Gz360",
+                "playerType": 2
+            },
 
-        {
-            "key": "csp_AppXY",
-            "name": "🎀️┃星牙┃短剧",
-            "type": 3,
-            "api": "./api/XYDJ.py",
-            "searchable": 1,
-            "changeable": 1,
-            "quickSearch": 1,
-            "filterable": 1
-        },
-        {
-            "key": "📺┃︎剧王┃短剧",
-            "name": "📺┃剧王┃短剧",
-            "type": 3,
-            "api": "./api/JWDJ.py",
-            "searchable": 1,
-            "changeable": 1,
-            "quickSearch": 1,
-            "filterable": 1
-        },
-        {
-            "key": "丫丫",
-            "name": "🐷┃丫丫┃动漫",
-            "type": 3,
-            "api": "csp_AppGet",
-            "ext": "http://tv.yy-fun.cc|qkxnwkfjwpcnwycl"
-        },
-        {
-            "key": "config",
-            "name": "🐼┃配置┃中心",
-            "type": 3,
-            "api": "csp_Config",
-            "playerType": 2
-        }
+            {
+                "key": "csp_AppXY",
+                "name": "🎀️┃星牙┃短剧",
+                "type": 3,
+                "api": "./api/XYDJ.py",
+                "searchable": 1,
+                "changeable": 1,
+                "quickSearch": 1,
+                "filterable": 1
+            },
+            {
+                "key": "📺┃︎剧王┃短剧",
+                "name": "📺┃剧王┃短剧",
+                "type": 3,
+                "api": "./api/JWDJ.py",
+                "searchable": 1,
+                "changeable": 1,
+                "quickSearch": 1,
+                "filterable": 1
+            },
+            {
+                "key": "丫丫",
+                "name": "🐷┃丫丫┃动漫",
+                "type": 3,
+                "api": "csp_AppGet",
+                "ext": "http://tv.yy-fun.cc|qkxnwkfjwpcnwycl"
+            },
+            {
+                "key": "config",
+                "name": "🐼┃配置┃中心",
+                "type": 3,
+                "api": "csp_Config",
+                "playerType": 2
+            }
     ],
     "parses": [
         {
