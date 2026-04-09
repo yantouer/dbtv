@@ -262,15 +262,14 @@
             "ext":"7lj763gg0939790i413gjh9kk011jijiggll990k9li73l224k770ik0j10l502j2j9l798lhj778hh33g018h94k5j400kij3567j7gji97kkk4118421g03lll"
         },
         {
-            "key":"优质",
-            "name":"🍺优质┃影视",
-            "type":3,
+            "key":"Dygang",
+            "name":"🍺电影港┃影视",
             "jar":"./jar/qj260315.jar",
-            "api":"csp_Qiji",
+            "type":3,
+            "api":"csp_Dygang",
             "searchable":1,
             "quickSearch":1,
-            "playerType":2,
-            "ext":"7lj763gg402i7942433293i0g9458881hig7j94k818g326i51491kljlk134k401g9g54gk8j5i9097751kh28kh9kj11kjl92k6046l0gkj8l630892glj67g61h48g3kjiigkg0263k6h955430429ill43307gk8k0602hh09lh0j6jh7h"
+            "filterable":0
         },
         {
             "key": "永永",
