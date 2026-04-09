@@ -240,17 +240,6 @@
 	        "ext":"7lj763gg0939791h1l3888jig44gi291li"
         },
         {
-            "key":"剧评",
-            "name":"🍺剧评┃影视",
-            "type":3,
-            "jar":"./jar/qj260315.jar",
-            "api":"csp_Jpys",
-            "searchable":1,
-            "quickSearch":1,
-            "playerType":1,
-            "ext":"7lj763gg402i7942463j9j9jh8579590k3hjii5gi4i73l2k5l"
-        },
-        {
             "key":"永夜",
             "name":"🍺永夜┃影视",
             "type":3,
