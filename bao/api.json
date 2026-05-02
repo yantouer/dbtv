@@ -78,89 +78,7 @@
             "api": "csp_AppRJ",
             "ext": "http://v.rbotv.cn"
 		},
-        {
-        "key": "糯米",
-        "name": "🍓糯米┃弹幕",
-        "type": 3,
-        "jar":"./jar/ok.jar",
-        "api": "csp_AweSomeGuard",
-        "searchable": 1,
-        "quickSearch": 1,
-        "changeable": 1,
-        "filterable": 1,
-        "ext": {
-            "sp": "Nmys",
-            "danmu": true
-        },
-        "timeout": 10
-        },
-       {
-      "key": "独播弹幕版",
-      "name": "👠独播┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "Duboku",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-    {
-      "key": "热播弹幕版",
-      "name": "📺热播┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 1,
-      "filterable": 1,
-      "ext": {
-        "sp": "TianTian",
-        "danmu": true,
-        "site": 0
-      },
-      "timeout": 10
-    },
-    {
-      "key": "奇奇弹幕版",
-      "name": "🐵奇奇┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "QiQi",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-    {
-      "key": "厂长弹幕版",
-      "name": "📔厂长┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "Czzy",
-        "danmu": true
-      },
-      "timeout": 10
-    },
-       
-        {
+                {
 	        "key": "csp_XYQHiker_农民影视",
 	        "name":"🍺农民┃影视",
             "type":3,
@@ -179,6 +97,73 @@
 	        "api":"csp_Nmvod",
 	        "playerType":2,
 	        "ext":"7lj763gg402i7942503g839jg74h8h88highi40799jh6i6k454419l0l5184k0g549h0kg2i01i838i2h42g891lgg1"
+        },
+ {
+            "key": "XinHan",
+            "name": "韩剧┃影视",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_XinHan",
+            "searchable": 1,
+            "quickSearch":1,
+            "filterable": 1
+        },
+        {
+            "key": "热播影视",
+            "name": "热播┃影视",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_AppRJ",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 0,
+            "ext": {
+                "site": [
+                    "http://v.rbotv.cn"
+                ]
+            }
+        },
+ {
+            "key": "jianpian",
+            "name": "荐片┃影视",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_Jianpian",
+            "searchable": 1,
+            "quickSearch":1,
+            "changeable": 1,
+            "ext": "./biliext/jianpian.json"
+        },        
+        {
+            "key": "缘梦",
+            "name": "缘梦┃影视",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "searchable": 1,
+            "quickSearch":1,
+            "changeable": 1,
+            "api": "csp_AppGet",
+            "ext": {
+                "url": "http://165.99.42.137:5432",
+                "dataKey": "1234567890987654",
+                "dataIv": "1234567890987654"
+            }
+        },
+        {
+            "key": "老鹰",
+            "name": "老鹰┃影视",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_AppQi",
+            "searchable": 1,
+            "quickSearch":1,
+            "changeable": 1,
+            "ext": {
+                "site": "https://maotouyinghubei.oss-cn-wuhan-lr.aliyuncs.com/maotouyinghb.txt",
+                "dataKey": "zxPtEUDGVllIUhDB",
+                "dataIv": "zxPtEUDGVllIUhDB",
+                "ua": "okhttp/3.10.0"
+            }
         },
         {
 	        "key":"天天",
