@@ -123,17 +123,6 @@
                 ]
             }
         },
- {
-            "key": "jianpian",
-            "name": "荐片┃影视",
-            "type": 3,
-            "jar": "./jar/dl260331.jar",
-            "api": "csp_Jianpian",
-            "searchable": 1,
-            "quickSearch":1,
-            "changeable": 1,
-            "ext": "./biliext/jianpian.json"
-        },        
         {
             "key": "缘梦",
             "name": "缘梦┃影视",
@@ -196,24 +185,62 @@
             "api": "csp_Gz360",
             "playerType": 2
         },
-        {
-            "key": "csp_AppXY",
-            "name": "🎀️┃星牙┃短剧",
+         {
+            "key": "HeMa",
+            "name": "盒马┃短剧",
             "type": 3,
-            "api": "./api/XYDJ.py",
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_HeMa",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1
+        },
+        //{"key": "JuWang","name": "剧王┃短剧","type": 3,"jar": "./dl260331.jar","api": "csp_JuWang","searchable": 1,"quickSearch": 1,"changeable": 0,"filterable": 1},
+        {
+            "key": "七星短剧",
+            "name": "七星┃短剧",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "https://mpimg.cn/down.php/48e9d346cdf6da376c53136693bec95a.py",
             "searchable": 1,
             "changeable": 1,
             "quickSearch": 1,
             "filterable": 1
         },
-        {
-            "key": "📺┃︎剧王┃短剧",
-            "name": "📺┃剧王┃短剧",
+{
+            "key": "曼波动漫",
+            "name": "曼波┃动漫",
             "type": 3,
-            "api": "./api/JWDJ.py",
+            "jar": "./jar/dl260331.jar",
             "searchable": 1,
-            "changeable": 1,
-            "quickSearch": 1,
+            "api": "csp_AppGet",
+            "ext": {
+                "url": "https://app.omofun1.top",
+                "dataKey": "66dc309cbeeca454",
+                "dataIv": "66dc309cbeeca454"
+            }
+        },
+        {
+            "key": "咕咕动漫",
+            "name": "咕咕┃动漫",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "searchable": 1,
+            "api": "csp_AppGet",
+            "ext": {
+                "url": "https://www.gugu3.com",
+                "dataKey": "nKfZ8KX6JTNWRzTD",
+                "dataIv": "nKfZ8KX6JTNWRzTD"
+            }
+        },
+        {
+            "key": "DmBus",
+            "name": "巴士┃动漫",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_DmBus",
+            "searchable": 1,
+            "changeable": 0,
             "filterable": 1
         },
         {
