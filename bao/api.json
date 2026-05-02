@@ -175,18 +175,7 @@
       },
       "timeout": 10
     },
-        {
-            "key": "猫猫",
-            "name": "🐟猫猫┃多线",
-            "type": 3,
-			"jar":"./jar/fty.jar",
-            "api": "csp_AppSxGuard",
-            "timeout": 10,
-            "searchable": 0,
-            "quickSearch": 0,
-            "changeable": 1,
-            "ext": "rfOX1voDIQhH8epBwpmIsuStr2HSytK11WwwcM/+XB8SbkBB4XYk/L52LroCiYRhoDrRLJ4ZkCh5q2RxCb5yUs6B5aCQVGSkR6zDgKLrFSDulg=="
-        },
+       
         {
 	        "key": "csp_XYQHiker_农民影视",
 	        "name":"🍺农民┃影视",
