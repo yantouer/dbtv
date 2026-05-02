@@ -19,6 +19,48 @@
                 "type": "list"
             }
         },
+ {
+            "key": "AiWan",
+            "name": "爱悠┃音乐",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_AiWan",
+            "searchable": 1,
+            "changeable": 0,
+            "filterable": 1
+        },
+        
+        {
+            "key": "蜻蜓FM",
+            "name": "蜻蜓┃广播",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_QingTing",
+            "searchable": 1,
+            "ext": ""
+        },
+        {
+            "key": "tingchina",
+            "name": "听中国┃听书",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_TingChina",
+            "searchable": 1,
+            "changeable": 0,
+            "filterable": 1
+        },
+        
+        {"key": "csp_XYQHiker_戏曲多多","name":"戏曲多多","type":3,"jar":"./xyq.jar","api":"csp_XYQHiker","searchable":1,"quickSearch":1,"filterable":1,"ext":"./XYQHiker/戏曲多多.json"},
+        {
+            "key": "xiqu",
+            "name": "戏曲大全",
+            "type": 3,
+            "jar": "./jar/dl260331.jar",
+            "api": "csp_Xiqu",
+            "searchable":1,
+            "quickSearch":1,
+            "ext": ""
+        },
         {
             "key": "瓜子影视",
             "name": "🍺宝哥｜推荐",
@@ -88,6 +130,12 @@
 	        "quickSearch":1,
 	        "filterable":1,
 	        "ext":"./json/农民影视.json"
+        },
+        {
+            "key": "csp_Jpys",
+            "name": "金牌┃影视",
+            "type": 3,
+            "api": "csp_Jpys"
         },
         {
 	        "key":"柠檬",
@@ -242,13 +290,6 @@
             "searchable": 1,
             "changeable": 0,
             "filterable": 1
-        },
-        {
-            "key": "丫丫",
-            "name": "🐷┃丫丫┃动漫",
-            "type": 3,
-            "api": "csp_AppGet",
-            "ext": "http://tv.yy-fun.cc|qkxnwkfjwpcnwycl"
         },
         {
             "key": "config",
