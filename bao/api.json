@@ -20,18 +20,8 @@
             }
         },
         {
-            "key": "919体育",
-            "name": "919｜体育",
-            "type": 3,
-            "api": "csp_919Tiyu",
-            "style": {
-                "type": "list"
-            }
-        },
-
-        {
             "key": "瓜子影视",
-            "name": "瓜子｜影视",
+            "name": "🍺宝哥｜推荐",
             "type": 3,
             "api": "csp_Gz360"
         },
