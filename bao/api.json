@@ -23,25 +23,6 @@
             "ext": "https://shdy5.us"
         },
         {
-            "key": "农民影视",
-            "name": "农民｜影视",
-            "type": 3,
-            "api": "csp_Wwys",
-            "ext": "https://vip.wwgz.cn:5200"
-        },
-        {
-            "key": "热播影视",
-            "name": "热播｜APP",
-            "type": 3,
-            "api": "csp_AppRJ",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 0,
-            "ext": {
-                "url": "http://v.rbotv.cn"
-            }
-        },  
-        {
             "key": "living",
             "name": "🐼┃游戏┃直播",
             "type": 3,
@@ -131,23 +112,6 @@
             "changeable": 1,
             "ext": "rfOb1uAWbkRHp7hdxprG9un3+S3T18333j8hL4ryEFdPZxse8yYwoKFyJOlU2M9/q2OcL8NQxT0k5GV9Quw0AIzUurGBVyPqCLrdirfpAz+n0Qh7PVBWo8uxWhO1Bs1MCYA1oiM="
         },
-   
-    {
-      "key": "瓜子",
-      "name": "🍉瓜子┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 1,
-      "filterable": 1,
-      "ext": {
-        "sp": "Guazi",
-        "danmu": true
-      },
-      "timeout": 10
-    },
     {
       "key": "热播弹幕版",
       "name": "📺热播┃弹幕",
