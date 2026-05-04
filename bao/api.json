@@ -149,22 +149,6 @@
       },
       "timeout": 10
     },
-       {
-      "key": "独播弹幕版",
-      "name": "👠独播┃弹幕",
-      "type": 3,
-      "jar":"./jar/ok.jar",
-      "api": "csp_AweSomeGuard",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "ext": {
-        "sp": "Duboku",
-        "danmu": true
-      },
-         "timeout": 10
-    }，
         {
             "key": "潮流",
             "name": "🏜┃潮流┃APP",
