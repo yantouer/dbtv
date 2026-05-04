@@ -100,6 +100,71 @@
                 "type": "list"
             }
         },
+{
+        "key": "糯米",
+        "name": "🍓糯米┃弹幕",
+        "type": 3,
+        "jar":"./jar/ok.jar",
+        "api": "csp_AweSomeGuard",
+        "searchable": 1,
+        "quickSearch": 1,
+        "changeable": 1,
+        "filterable": 1,
+        "ext": {
+            "sp": "Nmys",
+            "danmu": true
+        },
+        "timeout": 10
+        },
+{
+      "key": "瓜子",
+      "name": "🍉瓜子┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1,
+      "ext": {
+        "sp": "Guazi",
+        "danmu": true
+      },
+      "timeout": 10
+    },
+    {
+      "key": "热播弹幕版",
+      "name": "📺热播┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1,
+      "ext": {
+        "sp": "TianTian",
+        "danmu": true,
+        "site": 0
+      },
+      "timeout": 10
+    },
+       {
+      "key": "独播弹幕版",
+      "name": "👠独播┃弹幕",
+      "type": 3,
+      "jar":"./jar/ok.jar",
+      "api": "csp_AweSomeGuard",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "ext": {
+        "sp": "Duboku",
+        "danmu": true
+      },
+         "timeout": 10
+    }，
         {
             "key": "潮流",
             "name": "🏜┃潮流┃APP",
