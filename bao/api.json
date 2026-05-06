@@ -485,6 +485,20 @@
             "changeable": 0,
             "filterable": 1
         },
+	    {
+            "key": "配置中心",
+            "name": "⚙️网盘｜配置",
+            "type": 3,
+			"jar": "./jar/bxs.jar",
+            "api": "csp_Config",
+            "searchable": 0,
+            "changeable": 0,
+            "indexs": 0,
+            "style": {
+                "type": "rect",
+                "ratio": 1.597
+            }
+        },
         {
             "key": "config",
             "name": "🐼┃配置┃中心",
