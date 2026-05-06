@@ -164,6 +164,28 @@
             "filterable": 1
         },
 		{
+            "key": "玩偶",
+            "name": "🎪玩偶｜4K弹幕",
+            "type": 3,
+			"jar": "./jar/dl260331.jar",
+            "api": "csp_Wogg",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+            "changeable": 1,
+            "ext": {
+                "site": [
+                    "https://wogg.xxooo.cf",
+                    "https://woggpan.888484.xyz",
+                    "https://wogg.333232.xyz",
+                    "http://woggpan.xxooo.cf",
+                    "https://www.wogg.one"
+                ]
+            },
+            "timeout": 60
+        },
+
+		{
             "key": "热播影视",
             "name": "🎬热播｜APP",
             "type": 3,
