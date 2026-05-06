@@ -54,6 +54,28 @@
             "type": 3,
             "api": "csp_Gz360"
         },
+		 {
+            "key": "至臻",
+            "name": "💎至臻｜4K弹幕",
+            "type": 3,
+			"jar":"./jar/bxs.jar",
+            "api": "csp_PanWebShare",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+            "changeable": 1,
+            "ext": {
+                "site": [
+                    "https://mihdr.top",
+                    "https://www.miqk.cc",
+                    "https://xiaomiai.site",
+                    "https://xiaomi666.fun",
+                    "https://www.mihdr.top",
+                    "https://www.zhizhenpan.fun"
+                ]
+            },
+            "timeout": 60
+        },
         {
             "key": "骚火影视",
             "name": "骚火｜影视",
@@ -205,27 +227,6 @@
             "timeout": 60
         },
         {
-            "key": "二小",
-            "name": "🤡二小｜4K弹幕",
-            "type": 3,
-			"jar":"./jar/bxs.jar",
-            "api": "csp_PanWebShare",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "changeable": 1,
-            "ext": {
-                "site": [
-                    "https://www.2xiaopan.top",
-                    "https://2xiaopan.top",
-                    "https://www.erxiaozhan.top",
-                    "https://www.2xiaozhan.top",
-                    "https://wexwp.cc"
-                ]
-            },
-            "timeout": 60
-        },
-        {
             "key": "闪电",
             "name": "⚡闪电｜4K弹幕",
             "type": 3,
@@ -263,87 +264,7 @@
             },
             "timeout": 60
         },
-        {
-            "key": "蜡笔",
-            "name": "🖍️蜡笔｜4K弹幕",
-            "type": 3,
-			"jar":"./jar/bxs.jar",
-            "api": "csp_PanWebShare",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "changeable": 1,
-            "ext": {
-                "site": [
-                    "http://www.xiaocgege.shop",
-                    "http://xiaocge.fun",
-                    "http://feimo.fun",
-                    "https://feimao666.fun",
-                    "http://feimao888.fun",
-                    "http://www.labi88.sbs",
-                    "http://fmao.site",
-                    "http://fmao.shop",
-                    "http://xiaocgege.shop"
-                ]
-            },
-            "timeout": 60
-        },
-        {
-            "key": "至臻",
-            "name": "💎至臻｜4K弹幕",
-            "type": 3,
-			"jar":"./jar/bxs.jar",
-            "api": "csp_PanWebShare",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "changeable": 1,
-            "ext": {
-                "site": [
-                    "https://mihdr.top",
-                    "https://www.miqk.cc",
-                    "https://xiaomiai.site",
-                    "https://xiaomi666.fun",
-                    "https://www.mihdr.top",
-                    "https://www.zhizhenpan.fun"
-                ]
-            },
-            "timeout": 60
-        },
-        {
-            "key": "多多",
-            "name": "✨多多｜4K弹幕",
-            "type": 3,
-			"jar":"./jar/bxs.jar",
-            "api": "csp_PanWebShare",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "changeable": 1,
-            "ext": {
-                "site": [
-                    "https://tv.yydsys.top",
-                    "https://tv.yydsys.cc",
-                    "https://tv.214521.xyz"
-                ]
-            },
-            "timeout": 60
-        },
-
-		{
-            "key": "热播影视",
-            "name": "🎬热播｜APP",
-            "type": 3,
-	   		"jar": "./jar/dl260331.jar",
-            "api": "csp_AppRJ",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 0,
-            "ext": {
-                "site": "http://v.rbotv.cn"
-            }
-        },
-  		{
+       	{
             "key": "苹果",
             "name": "🍎小苹果｜影视",
             "type": 3,
