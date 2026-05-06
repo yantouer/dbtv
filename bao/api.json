@@ -163,21 +163,41 @@
             "quickSearch":1,
             "filterable": 1
         },
-        {
+		{
             "key": "热播影视",
-            "name": "热播┃影视",
+            "name": "🎬热播｜APP",
             "type": 3,
-            "jar": "./jar/dl260331.jar",
+	   		"jar":"./jar/bxs.jar",
             "api": "csp_AppRJ",
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 0,
             "ext": {
-                "site": [
-                    "http://v.rbotv.cn"
-                ]
+                "url": "http://v.rbotv.cn"
             }
         },
+  		{
+            "key": "苹果",
+            "name": "🍎小苹果｜影视",
+            "type": 3,
+ 	    "jar":"./jar/bxs.jar",
+            "api": "csp_AppDrama",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+            "ext": {
+                "appName": "小苹果",
+                "publicKey": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCduNEnfxGaLuQRk5ABzXHhPV43zi00sCHjLo8BYc+Wi6xXm2b4v0i28Sq4WlNCKhseft9fz8kO/qLr6/022o1RcuOU7e4GFL3U9WnNODwRBYSYWd+K8nqpI/tAUDmZEBGRWqjrc7x6aMl3A+xpnWkLbPCLsuhbuuUE3tv09oeOpwIDAQAB",
+                "dataKey": "S0VNDTJHOFHHCNMRAW5IV2TOS2PBPQ==",
+                "dataIv": "OC1A06E197EF10CF3F6058CA7A803B5E",
+                "pkg": "com.juechufsh.android.xpg1",
+                "host": "",
+                "site": "https://xpgandroid03-1372779881.cos.ap-beijing.myqcloud.com/app_xpg_android.txt",
+                "version": "1.0.0.3",
+                "decrypt": "0"
+            }
+        },
+
         {
             "key": "缘梦",
             "name": "缘梦┃影视",
