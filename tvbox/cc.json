@@ -58,6 +58,30 @@
       "filterable": 0
     },
     {
+        "id": "hsck",
+        "name": "黄色仓库",
+        "baseUrl": "https://hsckzy.vip/api.php/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 6
+    },
+    {
+        "id": "yutu",
+        "name": "玉兔",
+        "baseUrl": "https://yutuzy10.com/api.php/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 7
+    },
+    {
+        "id": "msnii",
+        "name": "美少女资源站",
+        "baseUrl": "https://www.msnii.com/api/json.php",
+        "group": "premium",
+        "enabled": true,
+        "priority": 8
+    },
+    {
       "key": "💞美少女资源💞",
       "name": "💞美少女资源💞",
       "type": 0,
