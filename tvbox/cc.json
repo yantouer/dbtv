@@ -102,15 +102,6 @@
       "quickSearch": 1,
       "filterable": 0
     },
-        {
-      "key": "naixiang",
-      "name": "奶香香资源",
-      "type": 0,
-      "api": "https://Naixxzy.com/api.php/provide/vod/at/xml",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    }, 
     {
       "key": "xrbsp",
       "name": "饮水机资源",
