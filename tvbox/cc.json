@@ -77,7 +77,7 @@
     },
      {
       "key": "aosika",
-      "name": ""奥斯卡资源",
+      "name": "奥斯卡资源",
       "type": 0,
       "api": "https://aosikazy.com/api.php/provide/vod/at/xml",
       "searchable": 1,
@@ -86,7 +86,7 @@
     },
     {
       "key": "shayu",
-      "name": ""鲨鱼资源",
+      "name": "鲨鱼资源",
       "type": 0,
       "api": "https://shayuapi.com/api.php/provide/vod/at/xml",
       "searchable": 1,
@@ -95,7 +95,7 @@
     },
        {
       "key": "xiaoji",
-      "name": ""小鸡资源",
+      "name": "小鸡资源",
       "type": 0,
       "api": "https://api.xiaojizy.live/provide/vod/at/xml",
       "searchable": 1,
@@ -104,38 +104,40 @@
     },
         {
       "key": "naixiang",
-      "name": ""奶香香资源",
+      "name": "奶香香资源",
       "type": 0,
       "api": "https://Naixxzy.com/api.php/provide/vod/at/xml",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
     }, 
-   
+    {
+      "key": "xrbsp",
+      "name": "饮水机资源",
+      "type": 0,
+      "api": "https://www.xrbsp.com/api/json.php",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    }, 
+      {
+      "key": "gdlsp",
+      "name": "香奈儿资源",
+      "type": 0,
+      "api": "https://www.gdlsp.com/api/json.php",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    }, 
    {
-        "id": "xrbsp",
-        "name": "饮水机资源站",
-        "baseUrl": "https://www.xrbsp.com/api/json.php",
-        "group": "premium",
-        "enabled": true,
-        "priority": 9
-    },
-    {
-        "id": "gdlsp",
-        "name": "香奈儿资源站",
-        "baseUrl": "https://www.gdlsp.com/api/json.php",
-        "group": "premium",
-        "enabled": true,
-        "priority": 10
-    },
-    {
-        "id": "kxgav",
-        "name": "白嫖资源站",
-        "baseUrl": "https://www.kxgav.com/api/json.php",
-        "group": "premium",
-        "enabled": true,
-        "priority": 11
-    },
+      "key": "kxgav",
+      "name": "白嫖资源",
+      "type": 0,
+      "api": "https://www.kxgav.com/api/json.php",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    }, 
     {
       "key": "pgxdy",
       "name": "哎呦喂资源",
