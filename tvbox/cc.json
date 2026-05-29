@@ -57,30 +57,34 @@
       "quickSearch": 1,
       "filterable": 0
     },
-    {
-        "id": "yutu",
-        "name": "玉兔",
-        "baseUrl": "https://yutuzy10.com/api.php/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 7
-    },
-    {
-        "id": "msnii",
-        "name": "美少女资源站",
-        "baseUrl": "https://www.msnii.com/api/json.php",
-        "group": "premium",
-        "enabled": true,
-        "priority": 8
-    },
      {
-        "id": "madou",
-        "name": "91麻豆",
-        "baseUrl": "https://91md.me/api.php/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 14
+      "key": "yutu",
+      "name": "玉兔资源",
+      "type": 0,
+      "api": "https://yutuzy10.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
     },
+    {
+      "key": "msnii",
+      "name": "美少女资源",
+      "type": 0,
+      "api": "https://www.msnii.com/api/json.php",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+      {
+      "key": "madou",
+      "name": "麻豆资源",
+      "type": 0,
+      "api": "https://91md.me/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+
     {
         "id": "aosika",
         "name": "奥斯卡资源",
