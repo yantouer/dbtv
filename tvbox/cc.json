@@ -75,39 +75,43 @@
       "quickSearch": 1,
       "filterable": 0
     },
-
-    {
-        "id": "aosika",
-        "name": "奥斯卡资源",
-        "baseUrl": "https://aosikazy.com/api.php/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 15
-    },
      {
-        "id": "shayu",
-        "name": "鲨鱼资源",
-        "baseUrl": "https://shayuapi.com/api.php/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 20
+      "key": "aosika",
+      "name": ""奥斯卡资源",
+      "type": 0,
+      "api": "https://aosikazy.com/api.php/provide/vod/at/xml",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
     },
     {
-        "id": "xiaoji",
-        "name": "小鸡资源",
-        "baseUrl": "https://api.xiaojizy.live/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 21
+      "key": "shayu",
+      "name": ""鲨鱼资源",
+      "type": 0,
+      "api": "https://shayuapi.com/api.php/provide/vod/at/xml",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
     },
-    {
-        "id": "naixiang",
-        "name": "奶香香",
-        "baseUrl": "https://Naixxzy.com/api.php/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 16
+       {
+      "key": "xiaoji",
+      "name": ""小鸡资源",
+      "type": 0,
+      "api": "https://api.xiaojizy.live/provide/vod/at/xml",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
     },
+        {
+      "key": "naixiang",
+      "name": ""奶香香资源",
+      "type": 0,
+      "api": "https://Naixxzy.com/api.php/provide/vod/at/xml",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    }, 
+   
    {
         "id": "xrbsp",
         "name": "饮水机资源站",
@@ -133,12 +137,13 @@
         "priority": 11
     },
     {
-        "id": "pgxdy",
-        "name": "哎呦喂资源站",
-        "baseUrl": "https://www.pgxdy.com/api/json.php",
-        "group": "premium",
-        "enabled": true,
-        "priority": 12
+      "key": "pgxdy",
+      "name": "哎呦喂资源",
+      "type": 0,
+      "api": "https://www.pgxdy.com/api/json.php,
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
     },
     {
       "key": "dadi",
