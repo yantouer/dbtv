@@ -58,14 +58,6 @@
       "filterable": 0
     },
     {
-        "id": "hsck",
-        "name": "黄色仓库",
-        "baseUrl": "https://hsckzy.vip/api.php/provide/vod",
-        "group": "premium",
-        "enabled": true,
-        "priority": 6
-    },
-    {
         "id": "yutu",
         "name": "玉兔",
         "baseUrl": "https://yutuzy10.com/api.php/provide/vod",
@@ -81,36 +73,77 @@
         "enabled": true,
         "priority": 8
     },
+     {
+        "id": "madou",
+        "name": "91麻豆",
+        "baseUrl": "https://91md.me/api.php/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 14
+    },
     {
-      "key": "💞美少女资源💞",
-      "name": "💞美少女资源💞",
-      "type": 0,
-      "api": "https://www.msnii.com/api/xml.php",
-      "searchable": 0,
-      "quickSearch": 0
+        "id": "aosika",
+        "name": "奥斯卡资源",
+        "baseUrl": "https://aosikazy.com/api.php/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 15
+    },
+     {
+        "id": "shayu",
+        "name": "鲨鱼资源",
+        "baseUrl": "https://shayuapi.com/api.php/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 20
+    },
+    {
+        "id": "xiaoji",
+        "name": "小鸡资源",
+        "baseUrl": "https://api.xiaojizy.live/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 21
+    },
+    {
+        "id": "naixiang",
+        "name": "奶香香",
+        "baseUrl": "https://Naixxzy.com/api.php/provide/vod",
+        "group": "premium",
+        "enabled": true,
+        "priority": 16
     },
    {
-      "key": "*白嫖资源",
-      "name": "*白嫖资源",
-      "type": 0,
-      "api": "https://www.kxgav.com/api/xml.php",
-      "searchable": 0,
-      "quickSearch": 0
-    },
-        {
-      "key": "*黄AV",
-      "name": "*黄AV",
-      "type": 0,
-      "api": "https://www.pgxdy.com/api/xml.php"
+        "id": "xrbsp",
+        "name": "饮水机资源站",
+        "baseUrl": "https://www.xrbsp.com/api/json.php",
+        "group": "premium",
+        "enabled": true,
+        "priority": 9
     },
     {
-      "key": "gdlsE",
-      "name": "香奶儿资源",
-      "type": 0,
-      "api": "https://www.gdlsp.com/api/xml.php",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1
+        "id": "gdlsp",
+        "name": "香奈儿资源站",
+        "baseUrl": "https://www.gdlsp.com/api/json.php",
+        "group": "premium",
+        "enabled": true,
+        "priority": 10
+    },
+    {
+        "id": "kxgav",
+        "name": "白嫖资源站",
+        "baseUrl": "https://www.kxgav.com/api/json.php",
+        "group": "premium",
+        "enabled": true,
+        "priority": 11
+    },
+    {
+        "id": "pgxdy",
+        "name": "哎呦喂资源站",
+        "baseUrl": "https://www.pgxdy.com/api/json.php",
+        "group": "premium",
+        "enabled": true,
+        "priority": 12
     },
     {
       "key": "dadi",
@@ -120,15 +153,6 @@
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1
-    },
-    {
-      "key": "yinshui",
-      "name": "水水资源",
-      "type": 0,
-      "api": "https://www.xrbsp.com/api/xml.php",
-      "searchable": 1,
-      "quickSearch": 0,
-      "filterable": 0
     },
     {
       "key": "senlin",
@@ -176,15 +200,7 @@
       "quickSearch": 1,
       "filterable": 0
     },
-    {
-      "key": "siwa",
-      "name": "丝丝资源",
-      "type": 1,
-      "api": "https://www.siwazyw.tv/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1
-    },
+   
     {
       "key": "jkunzy",
       "name": "哔哔资源",
@@ -203,15 +219,7 @@
       "quickSearch": 1,
       "filterable": 1
     },
-    {
-      "key": "f2d",
-      "name": "猫猫资源",
-      "type": 1,
-      "api": "https://caiji.semaozy.net/inc/apijson_vod.php",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
+    
     {
       "key": "diidzy",
       "name": "滴滴资源",
