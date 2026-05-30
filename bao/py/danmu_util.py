@@ -98,6 +98,8 @@ _ctx.verify_mode = ssl.CERT_NONE
 
 # TVBox 播放时会新建 Spider 实例，片名/集数需跨实例缓存
 _PLAY_VOD = {}
+_DANMU_META = {"name": "", "index": ""}
+_JAR_PROXY_BASE = None
 
 
 def _url_param(text):
@@ -369,6 +371,105 @@ def fetch_danmu_xml(vod_name, vod_index="", api_base=None):
     return empty_xml(), ""
 
 
+def _discover_jar_proxy_base(force=False):
+    """发现 JAR Proxy 端口（与 Proxy.smali 一致），勿用 Python getProxyUrl。"""
+    global _JAR_PROXY_BASE
+    if _JAR_PROXY_BASE and not force:
+        return _JAR_PROXY_BASE
+    for port in range(9978, 10000):
+        try:
+            req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/proxy?do=ck",
+                headers={"User-Agent": "Mozilla/5.0"},
+            )
+            with urllib.request.urlopen(req, timeout=2) as resp:
+                if (resp.read() or b"").decode("utf-8", "replace").strip() == "ok":
+                    _JAR_PROXY_BASE = f"http://127.0.0.1:{port}/proxy"
+                    return _JAR_PROXY_BASE
+        except Exception:
+            continue
+    _JAR_PROXY_BASE = "http://127.0.0.1:9978/proxy"
+    return _JAR_PROXY_BASE
+
+
+def _save_danmu_meta(name, ep):
+    name = clean_name(name)
+    ep = str(ep or "").strip()
+    if name:
+        _DANMU_META["name"] = name
+    if ep:
+        _DANMU_META["index"] = ep
+    try:
+        jl = __import__("com.github.catvod.spider.merge.m.l", fromlist=["l"])
+        if name:
+            jl.a("danmuvodname", name)
+            jl.a("searchvodname", name)
+        if ep:
+            jl.a("danmuvodindex", ep)
+    except Exception:
+        pass
+
+
+def _read_java_stream(stream):
+    if stream is None:
+        return ""
+    try:
+        buf = bytearray()
+        while True:
+            chunk = stream.read(8192)
+            if chunk is None:
+                break
+            if isinstance(chunk, int):
+                if chunk < 0:
+                    break
+                buf.append(chunk)
+                continue
+            if len(chunk) == 0:
+                break
+            buf.extend(chunk)
+        return bytes(buf).decode("utf-8", "replace")
+    except Exception:
+        return ""
+
+
+def _jar_appdanmu_xml(vod_name, vod_index=""):
+    """TV 端直接调 JAR Danmu.AppDanmu，与独播/瓜子 JAR 同源逻辑。"""
+    name = clean_name(vod_name) or _DANMU_META.get("name", "")
+    ep = str(vod_index or _DANMU_META.get("index", "") or "")
+    if not name:
+        return None
+    try:
+        from java.util import HashMap
+        from com.github.catvod.spider.Danmu import Danmu
+
+        params = HashMap()
+        params.put("vodName", name)
+        params.put("vodIndex", ep)
+        hit = Danmu.AppDanmu(params)
+        if not hit or len(hit) < 3:
+            return None
+        xml = _read_java_stream(hit[2])
+        return xml if xml else empty_xml()
+    except Exception:
+        return None
+
+
+def _fetch_appdanmu_via_jar_http(vod_name, vod_index=""):
+    base = _discover_jar_proxy_base()
+    name = _url_param(clean_name(vod_name) or _DANMU_META.get("name", ""))
+    ep = _url_param(vod_index or _DANMU_META.get("index", ""))
+    if not name:
+        return empty_xml()
+    url = f"{base}?do=appdanmu&vodName={name}&vodIndex={ep}"
+    try:
+        text = _http_get(url, 120)
+        if text:
+            return text
+    except Exception:
+        pass
+    return empty_xml()
+
+
 def _proxy_append(base, query):
     base = (base or "").strip()
     if not base:
@@ -377,26 +478,8 @@ def _proxy_append(base, query):
     return f"{base}{sep}{query}"
 
 
-def _jar_proxy_base(spider):
-    raw = ""
-    try:
-        raw = spider.getProxyUrl() or ""
-    except Exception:
-        pass
-    if "/proxy" in raw:
-        return raw.split("?")[0]
-    for port in (9978, 9977, 9979):
-        try:
-            req = urllib.request.Request(
-                f"http://127.0.0.1:{port}/proxy?do=ck",
-                headers={"User-Agent": "Mozilla/5.0"},
-            )
-            with urllib.request.urlopen(req, timeout=2) as resp:
-                if (resp.read() or b"").decode("utf-8", "replace").strip() == "ok":
-                    return f"http://127.0.0.1:{port}/proxy"
-        except Exception:
-            continue
-    return "http://127.0.0.1:9978/proxy"
+def _jar_proxy_base(spider=None):
+    return _discover_jar_proxy_base()
 
 
 def build_py_danmu_url(spider, vod_name, vod_index=""):
@@ -430,6 +513,7 @@ def attach_danmaku(spider, result, vod_name, vod_index=""):
     if not isinstance(result, dict) or not name:
         return result
     ep = str(vod_index or "").strip() or str(parse_episode(vod_index or name))
+    _save_danmu_meta(name, ep)
     url = build_danmu_url(spider, name, ep)
     if not url:
         return result
@@ -491,14 +575,26 @@ def _is_danmu_request(params):
 def handle_danmu_proxy(params, api_base=None):
     if not _is_danmu_request(params):
         return None
-    xml, source = fetch_danmu_xml(
-        params.get("vodName") or params.get("vodname") or params.get("name") or "",
-        params.get("vodIndex") or params.get("vodindex") or params.get("index") or "",
-        api_base=api_base,
+    name = (
+        params.get("vodName")
+        or params.get("vodname")
+        or params.get("name")
+        or _DANMU_META.get("name")
+        or ""
     )
-    if xml and "<d " in xml and source:
-        notify_danmu_success(source)
-    return [200, "application/xml", xml]
+    ep = (
+        params.get("vodIndex")
+        or params.get("vodindex")
+        or params.get("index")
+        or _DANMU_META.get("index")
+        or ""
+    )
+    xml = _jar_appdanmu_xml(name, ep)
+    if xml is None:
+        xml = _fetch_appdanmu_via_jar_http(name, ep)
+    if not xml or "<d " not in xml:
+        xml, _source = fetch_danmu_xml(name, ep, api_base=api_base)
+    return [200, "application/xml", xml or empty_xml()]
 
 
 def proxy_with_danmu(params, fallback=None, api_base=DEFAULT_DANMU_API):
