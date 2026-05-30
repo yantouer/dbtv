@@ -1,7 +1,11 @@
 {
-  "spider": "./jar/custom_spider.jar;md5;bab4d88ae23e02c86218a3ede5e28ac2",
+  "spider": "./jar/custom_spider.jar;md5;f33fa43289f49633bd16faabb72b20f6",
   "danmuColor": "彩色",
-  "danmuApi": "https://pizazz.us.ci/1314",
+  "danmuApi": "http://43.133.64.9:9321/87654321",
+  "danmuApiBackup": [
+    "http://danmu04.ifree.fun/87654321",
+    "http://danmu05.ifree.fun/87654321"
+  ],
   "danmu": true,
   "sites": [
     {

@@ -8,8 +8,69 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
-DEFAULT_DANMU_API = "https://pizazz.us.ci/1314"
+DEFAULT_DANMU_API = "http://43.133.64.9:9321/87654321"
+DEFAULT_DANMU_API_BACKUP = (
+    "http://danmu04.ifree.fun/87654321",
+    "http://danmu05.ifree.fun/87654321",
+)
 DMKU_API = "https://dmku.hls.one"
+_CONFIG_CANDIDATES = (
+    "config.json",
+    "api.json",
+    "../json/config.json",
+    "../../json/config.json",
+)
+
+
+def resolve_danmu_api(explicit=None):
+    apis = resolve_danmu_apis(explicit)
+    return apis[0] if apis else DEFAULT_DANMU_API.rstrip("/")
+
+
+def resolve_danmu_apis(explicit=None):
+    if explicit:
+        if isinstance(explicit, (list, tuple)):
+            out = [str(x).rstrip("/") for x in explicit if x]
+            return out or list(DEFAULT_DANMU_API_BACKUP)
+        return [str(explicit).rstrip("/")]
+    apis = []
+    try:
+        import os
+        roots = [
+            os.getcwd(),
+            os.path.dirname(os.path.abspath(__file__)),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "json"),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "baoge"),
+        ]
+        for root in roots:
+            for name in _CONFIG_CANDIDATES:
+                path = os.path.join(root, name)
+                if not os.path.isfile(path):
+                    continue
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        cfg = json.load(f)
+                    primary = (cfg or {}).get("danmuApi") or ""
+                    if primary:
+                        apis.append(str(primary).rstrip("/"))
+                    backup = (cfg or {}).get("danmuApiBackup") or []
+                    if isinstance(backup, list):
+                        for item in backup:
+                            item = str(item or "").strip().rstrip("/")
+                            if item and item not in apis:
+                                apis.append(item)
+                    if apis:
+                        return apis
+                except Exception:
+                    continue
+    except Exception:
+        pass
+    out = [DEFAULT_DANMU_API.rstrip("/")]
+    for item in DEFAULT_DANMU_API_BACKUP:
+        if item not in out:
+            out.append(item)
+    return out
 
 SKIP_WORDS = (
     "请遵守弹幕礼仪",
@@ -202,20 +263,22 @@ def build_direct_danmu_url(vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
     )
 
 
-def fetch_xml_by_video_url(video_url, api_base=DEFAULT_DANMU_API):
+def fetch_xml_by_video_url(video_url, api_base=None):
     if not video_url:
         return ""
-    url = (
-        f"{api_base.rstrip('/')}/api/v2/comment?url="
-        + urllib.parse.quote(video_url)
-        + "&format=xml"
-    )
-    try:
-        text = _http_get(url, 60)
-        if text and "<d " in text:
-            return text
-    except Exception:
-        pass
+    bases = resolve_danmu_apis(api_base)
+    for base in bases:
+        url = (
+            f"{base.rstrip('/')}/api/v2/comment?url="
+            + urllib.parse.quote(video_url)
+            + "&format=xml"
+        )
+        try:
+            text = _http_get(url, 60)
+            if text and "<d " in text:
+                return text
+        except Exception:
+            continue
     return ""
 
 
@@ -258,11 +321,11 @@ def empty_xml():
     return '<?xml version="1.0" encoding="UTF-8"?><i></i>'
 
 
-def fetch_danmu_xml(vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
+def fetch_danmu_xml(vod_name, vod_index="", api_base=None):
     name = clean_name(vod_name)
     if not name:
         return empty_xml()
-    link = resolve_platform_url(name, vod_index, api_base)
+    link = resolve_platform_url(name, vod_index)
     if link:
         xml = fetch_xml_by_video_url(link, api_base)
         if xml:
@@ -392,7 +455,8 @@ def _is_danmu_request(params):
     return do in ("danmu", "appdanmu")
 
 
-def handle_danmu_proxy(params, api_base=DEFAULT_DANMU_API):
+def handle_danmu_proxy(params, api_base=None):
+    api_base = resolve_danmu_api(api_base)
     if not _is_danmu_request(params):
         return None
     xml = fetch_danmu_xml(
