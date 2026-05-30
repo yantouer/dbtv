@@ -13,6 +13,11 @@ DEFAULT_DANMU_API_BACKUP = (
     "http://danmu04.ifree.fun/87654321",
     "http://danmu05.ifree.fun/87654321",
 )
+DANMU_API_LABELS = {
+    DEFAULT_DANMU_API.rstrip("/"): "主弹幕",
+    "http://danmu04.ifree.fun/87654321": "备用4",
+    "http://danmu05.ifree.fun/87654321": "备用5",
+}
 DMKU_API = "https://dmku.hls.one"
 _CONFIG_CANDIDATES = (
     "config.json",
@@ -263,6 +268,34 @@ def build_direct_danmu_url(vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
     )
 
 
+def api_source_label(api_base):
+    base = str(api_base or "").strip().rstrip("/")
+    if not base:
+        return ""
+    if base in DANMU_API_LABELS:
+        return DANMU_API_LABELS[base]
+    if "danmu04" in base:
+        return "备用4"
+    if "danmu05" in base:
+        return "备用5"
+    return "主弹幕"
+
+
+def notify_danmu_success(source=""):
+    msg = "弹幕加载成功"
+    if source:
+        msg = f"弹幕加载成功（{source}）"
+    for call in (
+        lambda: __import__("com.github.catvod.spider.merge.m.I", fromlist=["I"]).i(msg),
+        lambda: __import__("com.github.catvod.spider.merge.AB.o.E", fromlist=["E"]).b(msg),
+    ):
+        try:
+            call()
+            return
+        except Exception:
+            continue
+
+
 def fetch_xml_by_video_url(video_url, api_base=None):
     if not video_url:
         return ""
@@ -276,10 +309,10 @@ def fetch_xml_by_video_url(video_url, api_base=None):
         try:
             text = _http_get(url, 60)
             if text and "<d " in text:
-                return text
+                return text, api_source_label(base)
         except Exception:
             continue
-    return ""
+    return "", ""
 
 
 def _json_danmuku_to_xml(payload):
@@ -324,16 +357,16 @@ def empty_xml():
 def fetch_danmu_xml(vod_name, vod_index="", api_base=None):
     name = clean_name(vod_name)
     if not name:
-        return empty_xml()
+        return empty_xml(), ""
     link = resolve_platform_url(name, vod_index)
     if link:
-        xml = fetch_xml_by_video_url(link, api_base)
+        xml, source = fetch_xml_by_video_url(link, api_base)
         if xml:
-            return xml
+            return xml, source
         xml = fetch_dmku_json(link)
         if xml:
-            return xml
-    return empty_xml()
+            return xml, "弹幕库"
+    return empty_xml(), ""
 
 
 def _proxy_append(base, query):
@@ -456,14 +489,15 @@ def _is_danmu_request(params):
 
 
 def handle_danmu_proxy(params, api_base=None):
-    api_base = resolve_danmu_api(api_base)
     if not _is_danmu_request(params):
         return None
-    xml = fetch_danmu_xml(
+    xml, source = fetch_danmu_xml(
         params.get("vodName") or params.get("vodname") or params.get("name") or "",
         params.get("vodIndex") or params.get("vodindex") or params.get("index") or "",
         api_base=api_base,
     )
+    if xml and "<d " in xml and source:
+        notify_danmu_success(source)
     return [200, "application/xml", xml]
 
 

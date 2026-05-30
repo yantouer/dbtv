@@ -1,5 +1,5 @@
 {
-  "spider": "./jar/custom_spider.jar;md5;f33fa43289f49633bd16faabb72b20f6",
+  "spider": "./jar/custom_spider.jar;md5;96ce47a6d52c0d2de25c0ef5cb60ad61",
   "danmuColor": "彩色",
   "danmuApi": "http://43.133.64.9:9321/87654321",
   "danmuApiBackup": [
