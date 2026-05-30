@@ -269,6 +269,11 @@ class Spider(Spider):
             "vod_play_from": vod_play_from,
             "vod_play_url": vod_play_url
         }]
+        try:
+            from danmu_util import remember_from_vod
+            remember_from_vod(self, result[0])
+        except Exception:
+            pass
         
         return {"list": result}
 
@@ -329,4 +334,17 @@ class Spider(Spider):
         else:
             url = id
         
-        return {"parse": 1, "url": url, "header": self.headers}
+        result = {"parse": 1, "url": url, "header": self.headers}
+        try:
+            from danmu_util import attach_player
+            attach_player(self, result, id, flag)
+        except Exception:
+            pass
+        return result
+
+    def localProxy(self, params):
+        try:
+            from danmu_util import proxy_with_danmu
+            return proxy_with_danmu(params)
+        except Exception:
+            return None

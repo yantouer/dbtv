@@ -53,6 +53,8 @@ class Spider(Spider):
         }
         self.cache = {}
         self.cache_timeout = 300
+        self._vod_name = ""
+        self._ep_map = {}
 
     VIDEO_UA = (
         "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 "
@@ -247,6 +249,13 @@ class Spider(Spider):
                 ordered = sorted(sites.keys(), key=lambda x: int(x) if str(x).isdigit() else 0, reverse=True)
                 video_detail["vod_play_from"] = '$$$'.join(ordered)
                 video_detail["vod_play_url"] = '$$$'.join('#'.join(sites[k]) for k in ordered)
+                self._vod_name = video_detail.get("vod_name", "")
+                self._ep_map = {}
+                for eps in sites.values():
+                    for item in eps:
+                        if "$" in item:
+                            title, param = item.split("$", 1)
+                            self._ep_map[param] = title
 
             return {'list': [video_detail]}
 
@@ -303,16 +312,14 @@ class Spider(Spider):
             url = (data or {}).get('url', '')
             if not url or not self.isVideoFormat(url):
                 return {"parse": 0, "jx": 0, "playUrl": "", "url": ""}
-            # 加密 m3u8 走 jar BgAd 去广告代理
-            if 'decry/vd' in url or '/decrypt/' in url.lower() or '.m3u8' in url.lower():
-                b64url = base64.b64encode(url.encode('utf-8')).decode('utf-8')
-                return {
-                    "parse": 0,
-                    "jx": 0,
-                    "playUrl": "",
-                    "url": f"{self.getProxyUrl()}&do=bgad&url={b64url}",
-                }
-            return {"parse": 0, "jx": 0, "playUrl": "", "url": url}
+            result = {"parse": 0, "jx": 0, "playUrl": "", "url": url}
+            try:
+                from danmu_util import attach_danmaku
+                ep = self._ep_map.get(id, flag)
+                attach_danmaku(self, result, self._vod_name, ep)
+            except Exception:
+                pass
+            return result
         except Exception as e:
             print(f"播放解析失败: {e}")
             return {"parse": 0, "jx": 0, "playUrl": "", "url": ""}
@@ -329,6 +336,13 @@ class Spider(Spider):
         pass
 
     def localProxy(self, params):
+        try:
+            from danmu_util import handle_danmu_proxy
+            hit = handle_danmu_proxy(params)
+            if hit:
+                return hit
+        except Exception:
+            pass
         try:
             from urllib.parse import urljoin
             raw = params.get('url') or ''

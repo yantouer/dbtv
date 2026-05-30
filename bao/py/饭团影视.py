@@ -373,6 +373,7 @@ class Spider(Spider):
 
         videos.append({
             "vod_id": did,
+            "vod_name": name,
             "vod_director": director,
             "vod_actor": actor,
             "vod_remarks": remarks,
@@ -383,6 +384,11 @@ class Spider(Spider):
             "vod_play_url": bofang
                      })
 
+        try:
+            from danmu_util import remember_from_vod
+            remember_from_vod(self, videos[0])
+        except Exception:
+            pass
         result['list'] = videos
         return result
 
@@ -408,6 +414,11 @@ class Spider(Spider):
             result["playUrl"] = ''
             result["url"] = url
             result["header"] = headerx
+            try:
+                from danmu_util import attach_player
+                attach_player(self, result, id, flag)
+            except Exception:
+                pass
             return result
 
     def searchContentPage(self, key, quick, page):
@@ -464,6 +475,16 @@ class Spider(Spider):
         return self.searchContentPage(key, quick, '1')
 
     def localProxy(self, params):
+        try:
+            from danmu_util import proxy_with_danmu
+            hit = proxy_with_danmu(params, self._local_proxy_media)
+            if hit:
+                return hit
+        except Exception:
+            pass
+        return self._local_proxy_media(params)
+
+    def _local_proxy_media(self, params):
         if params['type'] == "m3u8":
             return self.proxyM3u8(params)
         elif params['type'] == "media":

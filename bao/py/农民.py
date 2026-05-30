@@ -12,6 +12,8 @@ class Spider(BaseSpider):
 
     def init(self, extend=""):
         self.host = "https://www.nmdvd.top"
+        self._vod_name = ""
+        self._page_eps = {}
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
             "Referer": self.host,
@@ -63,6 +65,13 @@ class Spider(BaseSpider):
 
             vod["vod_play_from"] = "$$$".join(play_from)
             vod["vod_play_url"] = "$$$".join(play_url)
+            self._vod_name = vod.get("vod_name", "")
+            self._page_eps = {}
+            for block in play_url:
+                for item in block.split("#"):
+                    if "$" in item:
+                        ep_name, link = item.split("$", 1)
+                        self._page_eps[self._fix_url(link)] = ep_name
             return {"list": [vod]}
         except:
             return {"list": []}
@@ -113,12 +122,14 @@ class Spider(BaseSpider):
             page_url = self._fix_url(id)
             rsp = self.fetch(page_url, headers=self.headers)
             html, cookie = rsp.text, self._build_cookie(rsp)
+            vod_name = self._vod_name or self._match_text(html, [r'<h[13][^>]*class="[^"]*title[^"]*"[^>]*>(.*?)</h[13]>', r'<title>(.*?)</title>']).replace("_农民影视", "").replace("-农民影视", "").strip()
+            ep_name = self._page_eps.get(page_url, flag)
 
             original_vid, encrypt = self._extract_player_data(html)
 
             # 1. 页面直接带流
             for u in self._extract_urls(html):
-                if self.is_valid_video(u): return self._play(u)
+                if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
 
             if not original_vid:
                 return {"parse": 1, "playUrl": "", "url": page_url, "header": self.headers}
@@ -126,7 +137,7 @@ class Spider(BaseSpider):
             # 2. 前端直连解密 (非自建解析线路)
             if not any(k in str(flag).lower() for k in ['zl', 'yd', '1080zyk', 'yynb', 'ace', '自建', 'yz']):
                 for u in self._get_candidates(original_vid, encrypt):
-                    if self.is_valid_video(u): return self._play(u)
+                    if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
 
             # 3. 后端解析核心处理
             jx_url = f"{self.host}/jx/player.php?vid={urllib.parse.quote(original_vid, safe='')}"
@@ -139,12 +150,12 @@ class Spider(BaseSpider):
                     info = data.get("data", {})
                     cipher = info.get("url") or info.get("vid") or ""
                     for u in self._get_candidates(cipher, int(str(info.get("urlmode", "0")) or 0)):
-                        if self.is_valid_video(u): return self._play(u)
+                        if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
 
             # 3.2 jx/player.php 页面爬取嗅探
             for _ in range(2):
                 u = self._sniff_jx(jx_url, page_url, cookie)
-                if self.is_valid_video(u): return self._play(u)
+                if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
 
             # 4. WebView 嗅探兜底
             return {"parse": 1, "playUrl": "", "url": jx_url, "header": {"User-Agent": self.headers["User-Agent"], "Referer": page_url}}
@@ -250,7 +261,7 @@ class Spider(BaseSpider):
         if hasattr(rsp, "cookies"): arr.extend(f"{k}={v}" for k, v in rsp.cookies.items())
         return "; ".join(arr)
 
-    def _play(self, url):
+    def _play(self, url, vod_name="", ep_name=""):
         url = str(url).strip()
         header = {"User-Agent": self.headers["User-Agent"]}
         
@@ -273,12 +284,21 @@ class Spider(BaseSpider):
                 url += "#.mp4"
         else:
             header["Referer"] = self.host
-            if ".m3u8" in url.lower() or "m3u8?" in url.lower():
-                import base64
-                b64url = base64.b64encode(url.encode("utf-8")).decode("utf-8")
-                url = f"{self.getProxyUrl()}&do=bgad&url={b64url}"
             
-        return {"parse": 0, "playUrl": "", "url": url, "header": header}
+        result = {"parse": 0, "playUrl": "", "url": url, "header": header}
+        try:
+            from danmu_util import attach_danmaku
+            attach_danmaku(self, result, vod_name, ep_name)
+        except Exception:
+            pass
+        return result
+
+    def localProxy(self, params):
+        try:
+            from danmu_util import handle_danmu_proxy
+            return handle_danmu_proxy(params)
+        except Exception:
+            return None
 
     def _match_text(self, text, patterns):
         for p in patterns:

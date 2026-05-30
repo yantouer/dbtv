@@ -38,6 +38,8 @@ class Spider(Spider):
             "https://m.sdzhgt.com",
         ])
         self.home_url = self._pick_host(candidates)
+        self._vod_name = ""
+        self._ep_map = {}
 
     def _pick_host(self, urls):
         headers = {"User-Agent": self.ua}
@@ -434,6 +436,11 @@ class Spider(Spider):
 
                 }
             )
+            self._vod_name = data.get('vodName', '')
+            self._ep_map = {}
+            for i in play_list:
+                key = ids + '/' + str(i['nid'])
+                self._ep_map[key] = i.get('name', '')
         except requests.RequestException as e:
             return {'list': [], 'msg': e}
         return {"list": video_list, 'parse': 0, 'jx': 0}
@@ -480,9 +487,22 @@ class Spider(Spider):
         except requests.RequestException as e:
             return {"url": play_url, "header": h2, "parse": 0, "jx": 0}
 
-        return {"url": play_url, "header": h2, "parse": 0, "jx": 0}
+        result = {"url": play_url, "header": h2, "parse": 0, "jx": 0}
+        try:
+            from danmu_util import attach_danmaku
+            attach_danmaku(self, result, self._vod_name, self._ep_map.get(pid, flag))
+        except Exception:
+            pass
+        return result
 
     def localProxy(self, params):
+        try:
+            from danmu_util import handle_danmu_proxy
+            hit = handle_danmu_proxy(params)
+            if hit:
+                return hit
+        except Exception:
+            pass
         pass
 
     def destroy(self):

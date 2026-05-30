@@ -186,14 +186,25 @@ class Spider(Spider):
             if play_path != did:
                 bofang.append(f"播放${play_path}")
 
+        title = ''
+        h1 = doc.select_one('h1') or doc.select_one('.video-title')
+        if h1:
+            title = h1.get_text(' ', strip=True)
+
         videos = [{
             "vod_id": did,
+            "vod_name": title,
             "vod_remarks": remarks,
             "vod_year": year,
             "vod_content": content,
             "vod_play_from": "剧王",
             "vod_play_url": '#'.join(bofang),
         }]
+        try:
+            from danmu_util import remember_from_vod
+            remember_from_vod(self, videos[0])
+        except Exception:
+            pass
         return {'list': videos}
 
     def playerContent(self, flag, id, vipFlags):
@@ -206,6 +217,11 @@ class Spider(Spider):
             "url": url,
             "header": headerx,
         }
+        try:
+            from danmu_util import attach_player
+            attach_player(self, result, id, flag)
+        except Exception:
+            pass
         return result
 
     def searchContentPage(self, key, quick, pg):
@@ -227,6 +243,16 @@ class Spider(Spider):
         return self.searchContentPage(key, quick, '1')
 
     def localProxy(self, params):
+        try:
+            from danmu_util import proxy_with_danmu
+            hit = proxy_with_danmu(params, self._local_proxy_media)
+            if hit:
+                return hit
+        except Exception:
+            pass
+        return self._local_proxy_media(params)
+
+    def _local_proxy_media(self, params):
         if params['type'] == "m3u8":
             return self.proxyM3u8(params)
         elif params['type'] == "media":

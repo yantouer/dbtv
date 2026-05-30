@@ -20,6 +20,8 @@ class Spider(Spider):
         if host and not host.startswith("http"):
             host = "https://" + host
         self.host = host
+        self._vod_name = ""
+        self._ep_map = {}
         self.headers = {
             "User-Agent": (
                 "Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 "
@@ -162,6 +164,8 @@ class Spider(Spider):
                 if pid:
                     play_items.append(f"{name}${pid}")
         vod["vod_play_url"] = "#".join(play_items)
+        self._vod_name = title
+        self._ep_map = {pid: name for name, pid in [x.split("$", 1) for x in play_items if "$" in x]}
         return {"list": [vod]}
 
     def searchContent(self, key, quick, pg="1"):
@@ -207,7 +211,17 @@ class Spider(Spider):
         iv = self.regStr(html, pat, 3)
         decontent = self.parseCBC(base64.b64decode(content), key, iv).decode()
         play_url = self.regStr(decontent, r'video: \{url: \\"([^\\"]+)\\"')
-        return {"parse": 0, "playUrl": "", "url": play_url, "header": self.headers}
+        result = {"parse": 0, "playUrl": "", "url": play_url, "header": self.headers}
+        try:
+            from danmu_util import attach_danmaku
+            attach_danmaku(self, result, self._vod_name, self._ep_map.get(id, flag))
+        except Exception:
+            pass
+        return result
 
     def localProxy(self, params):
-        pass
+        try:
+            from danmu_util import handle_danmu_proxy
+            return handle_danmu_proxy(params)
+        except Exception:
+            return None

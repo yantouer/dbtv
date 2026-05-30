@@ -81,6 +81,13 @@ class Spider(Spider):
             ps.append('#'.join([f"{k.text()}${k.attr('href')}" for k in list(p[i]('a').items())[::-1]]))
         vod['vod_play_from']='$$$'.join(ns)
         vod['vod_play_url']='$$$'.join(ps)
+        title = data('h1').text() or data('title').text() or ''
+        vod['vod_name'] = title.strip()
+        try:
+            from danmu_util import remember_from_vod
+            remember_from_vod(self, vod)
+        except Exception:
+            pass
         return {'list':[vod]}
 
     def searchContent(self, key, quick, pg="1"):
@@ -128,10 +135,18 @@ class Spider(Spider):
             'referer': f'{self.host}/',
             'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
-        return  {'parse': p, 'url': url, 'header': phd}
+        try:
+            from danmu_util import attach_player
+            return attach_player(self, {'parse': p, 'url': url, 'header': phd}, id, flag)
+        except Exception:
+            return {'parse': p, 'url': url, 'header': phd}
 
     def localProxy(self, param):
-        pass
+        try:
+            from danmu_util import proxy_with_danmu
+            return proxy_with_danmu(param)
+        except Exception:
+            return None
 
     def liveContent(self, url):
         pass

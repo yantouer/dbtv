@@ -141,6 +141,11 @@ class Spider(Spider):
                         play.append("")
         video["vod_play_from"] = "$$$".join(names)
         video["vod_play_url"] = "$$$".join(play)
+        try:
+            from danmu_util import remember_from_vod
+            remember_from_vod(self, video)
+        except Exception:
+            pass
         result = {"list": [video]}
         return result
 
@@ -183,9 +188,21 @@ class Spider(Spider):
         result["parse"] = 0
         result["url"] = url
         result["header"] = {'user-agent': 'okhttp/4.9.2'}
+        try:
+            from danmu_util import attach_player
+            attach_player(self, result, id, flag)
+        except Exception:
+            pass
         return result
 
     def localProxy(self, param):
+        try:
+            from danmu_util import proxy_with_danmu
+            hit = proxy_with_danmu(param)
+            if hit:
+                return hit
+        except Exception:
+            pass
         url = b64decode(param["url"]).decode('utf-8')
         durl = url[:url.rfind('/')]
         data = self.fetch(url, headers=self.header()).content.decode("utf-8")

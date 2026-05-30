@@ -43,7 +43,12 @@ class Spider(Spider):
         return self.vod.playerContent(flag, pid, vipFlags)
 
     def localProxy(self, params):
-        pass
+        try:
+            from danmu_util import proxy_with_danmu
+            return proxy_with_danmu(params)
+        except Exception:
+            pass
+        return None
 
     def destroy(self):
         return '正在Destroy'
@@ -234,7 +239,7 @@ class Vod:
                 {
                     'type_name': '',
                     'vod_id': ids,
-                    'vod_name': '',
+                    'vod_name': root.xpath('//h1/text()')[0].strip() if root.xpath('//h1/text()') else '',
                     'vod_remarks': '',
                     'vod_year': '',
                     'vod_area': '',
@@ -246,6 +251,11 @@ class Vod:
 
                 }
             )
+            try:
+                from danmu_util import remember_from_vod
+                remember_from_vod(self, video_list[0])
+            except Exception:
+                pass
             return {"list": video_list, 'parse': 0, 'jx': 0}
         except requests.RequestException as e:
             return {'list': [], 'msg': e}
@@ -265,7 +275,13 @@ class Vod:
             urls = root.xpath('//iframe/@src')
             if len(urls) == 0:
                 return {'url': self.error_play_url, 'parse': 0, 'jx': 0}
-            return {'url': urls[0], 'parse': 1, 'jx': 0}
+            result = {'url': urls[0], 'parse': 1, 'jx': 0}
+            try:
+                from danmu_util import attach_player
+                attach_player(self, result, pid, flag)
+            except Exception:
+                pass
+            return result
 
         except requests.RequestException as e:
             print(e)

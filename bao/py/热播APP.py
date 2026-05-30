@@ -101,6 +101,11 @@ class Spider(Spider):
                 c.append(f"{j.get('name')}${self.e64(json.dumps(d))}")
             p.append('#'.join(c))
         vod.update({'vod_play_from':'$$$'.join(n),'vod_play_url':'$$$'.join(p)})
+        try:
+            from danmu_util import remember_from_vod
+            remember_from_vod(self, vod)
+        except Exception:
+            pass
         return {'list':[vod]}
 
     def searchContent(self, key, quick, pg="1"):
@@ -125,9 +130,25 @@ class Spider(Spider):
             h['Referer'] = ids['r']
         if ids.get('u'):
             h['User-Agent'] = ids['u']
-        return  {'parse': 0, 'url': url, 'header': h}
+        result = {'parse': 0, 'url': url, 'header': h}
+        try:
+            from danmu_util import attach_player
+            attach_player(self, result, id, flag)
+        except Exception:
+            pass
+        return result
 
     def localProxy(self, param):
+        try:
+            from danmu_util import proxy_with_danmu
+            hit = proxy_with_danmu(param, self._local_proxy_media)
+            if hit:
+                return hit
+        except Exception:
+            pass
+        return self._local_proxy_media(param)
+
+    def _local_proxy_media(self, param):
         data=json.loads(self.d64(param['data']))
         h = {}
         if data.get('r'):
