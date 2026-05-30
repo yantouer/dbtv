@@ -489,8 +489,8 @@ class Spider(Spider):
 
         result = {"url": play_url, "header": h2, "parse": 0, "jx": 0}
         try:
-            from danmu_util import attach_danmaku
-            attach_danmaku(self, result, self._vod_name, self._ep_map.get(pid, flag))
+            from danmu_util import finalize_player
+            finalize_player(self, result, pid, flag, getattr(self, "_vod_name", ""), getattr(self, "_ep_map", {}).get(pid, flag))
         except Exception:
             pass
         return result

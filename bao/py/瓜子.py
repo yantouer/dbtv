@@ -319,8 +319,15 @@ class Spider(Spider):
                 return {"parse": 0, "jx": 0, "playUrl": "", "url": ""}
             result = {"parse": 0, "jx": 0, "playUrl": "", "url": url}
             try:
-                from danmu_util import attach_player
-                attach_player(self, result, id, flag)
+                from danmu_util import finalize_player, load_vod_name
+                vid = body.get("vod_d_id") or ""
+                vn = getattr(self, "_vod_name", "") or load_vod_name(vid, self)
+                ep = (
+                    self._ep_map.get(id)
+                    or self._ep_map.get(str(id))
+                    or flag
+                )
+                finalize_player(self, result, id, flag, vn, ep)
             except Exception:
                 pass
             return result

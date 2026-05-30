@@ -26,7 +26,7 @@
     },
     {
       "key": "guazi",
-      "name": "瓜子影视",
+      "name": "瓜子影视(弹幕)",
       "type": 3,
       "api": "csp_Gz360",
       "searchable": 1,
@@ -35,7 +35,7 @@
     },
     {
       "key": "jpys",
-      "name": "金牌影视",
+      "name": "金牌影视(弹幕)",
       "type": 3,
       "api": "csp_Jpys",
       "searchable": 1,
@@ -45,7 +45,7 @@
     },
     {
       "key": "duboku",
-      "name": "独播",
+      "name": "独播(弹幕)",
       "type": 3,
       "api": "csp_Duboku",
       "searchable": 1,
@@ -534,20 +534,20 @@
     },
     {
       "key": "guazi_py",
-      "name": "瓜子影视(py)",
+      "name": "瓜子影视(py·仅播放)",
       "type": 3,
       "api": "./py/瓜子.py",
-      "searchable": 1,
+      "searchable": 0,
       "quickSearch": 0,
       "changeable": 1,
       "filterable": 1
     },
     {
       "key": "jpys_py",
-      "name": "金牌影视(py)",
+      "name": "金牌影视(py·仅播放)",
       "type": 3,
       "api": "./py/金牌.py",
-      "searchable": 1,
+      "searchable": 0,
       "quickSearch": 0,
       "changeable": 1,
       "filterable": 1,
@@ -576,7 +576,7 @@
     },
     {
       "key": "nongmin",
-      "name": "农民影视",
+      "name": "农民影视(弹幕)",
       "type": 3,
       "api": "csp_Wwys",
       "searchable": 1,
@@ -586,11 +586,11 @@
     },
     {
       "key": "nongmin_py",
-      "name": "农民影视(py)",
+      "name": "农民影视(py·仅播放)",
       "type": 3,
       "api": "./py/农民.py",
-      "searchable": 1,
-      "quickSearch": 1,
+      "searchable": 0,
+      "quickSearch": 0,
       "changeable": 1,
       "filterable": 1
     },
@@ -659,7 +659,7 @@
     },
     {
       "key": "saohuo",
-      "name": "骚火影视",
+      "name": "骚火影视(弹幕)",
       "type": 3,
       "api": "csp_SaoHuo",
       "searchable": 1,
@@ -669,17 +669,17 @@
     },
     {
       "key": "saohuo_py",
-      "name": "骚火影视(py)",
+      "name": "骚火影视(py·仅播放)",
       "type": 3,
       "api": "./py/骚火影视.py",
-      "searchable": 1,
-      "quickSearch": 1,
+      "searchable": 0,
+      "quickSearch": 0,
       "changeable": 1,
       "filterable": 1
     },
     {
       "key": "rbapp",
-      "name": "热播短剧(py)",
+      "name": "热播短剧(py·搜弹幕)",
       "type": 3,
       "api": "./py/热播APP.py",
       "searchable": 1,
@@ -689,7 +689,7 @@
     },
     {
       "key": "ddgui",
-      "name": "达达龟影院(py)",
+      "name": "达达龟影院(py·搜弹幕)",
       "type": 3,
       "api": "./py/达达龟影院.py",
       "searchable": 1,
@@ -699,7 +699,7 @@
     },
     {
       "key": "fantuan",
-      "name": "饭团影视(py)",
+      "name": "饭团影视(py·搜弹幕)",
       "type": 3,
       "api": "./py/饭团影视.py",
       "searchable": 1,
@@ -708,7 +708,7 @@
     },
     {
       "key": "lieshou",
-      "name": "猎手影视(py)",
+      "name": "猎手影视(py·搜弹幕)",
       "type": 3,
       "api": "./py/猎手影视.py",
       "searchable": 1,
@@ -717,7 +717,7 @@
     },
     {
       "key": "dmbashi",
-      "name": "动漫巴士(py)",
+      "name": "动漫巴士(py·搜弹幕)",
       "type": 3,
       "api": "./py/动漫巴士.py",
       "searchable": 1,
@@ -797,7 +797,7 @@
     },
     {
       "key": "jwdj",
-      "name": "剧王短剧(py)",
+      "name": "剧王短剧(py·搜弹幕)",
       "type": 3,
       "api": "./py/剧王短剧.py",
       "searchable": 1,

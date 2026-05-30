@@ -292,8 +292,8 @@ class Spider(BaseSpider):
             
         result = {"parse": 0, "playUrl": "", "url": url, "header": header}
         try:
-            from danmu_util import attach_player
-            attach_player(self, result, play_id or url, ep_name)
+            from danmu_util import finalize_player
+            finalize_player(self, result, play_id or url, ep_name, getattr(self, "_vod_name", ""), ep_name)
         except Exception:
             pass
         return result

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """弹幕工具：走 Python/JAR 本地代理拉 XML，不直连外网。"""
 import json
+import hashlib
 import random
 import re
 import ssl
+import time
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -19,6 +21,8 @@ DANMU_API_LABELS = {
     "http://danmu05.ifree.fun/87654321": "备用5",
 }
 DMKU_API = "https://dmku.hls.one"
+# 方案 B：Python 源不内嵌弹幕；弹幕由 JAR 源或播放器「搜索弹幕」+ danmuApi 承担
+PY_ATTACH_DANMU = False
 _CONFIG_CANDIDATES = (
     "config.json",
     "api.json",
@@ -99,7 +103,11 @@ _ctx.verify_mode = ssl.CERT_NONE
 # TVBox 播放时会新建 Spider 实例，片名/集数需跨实例缓存
 _PLAY_VOD = {}
 _DANMU_META = {"name": "", "index": ""}
-_JAR_PROXY_BASE = None
+_VOD_ID_NAME = {}
+_EP_BY_KEY = {}
+_DANMU_URL_BY_KEY = {}
+_LOCAL_PORT = 0
+_JAR_PROXY_BASE = "http://127.0.0.1:9978/proxy"
 
 
 def _url_param(text):
@@ -107,7 +115,274 @@ def _url_param(text):
     return str(text or "")
 
 
-def _cache_play_meta(vod_name, play_url):
+def _norm_play_key(key):
+    return urllib.parse.unquote(str(key or "").strip())
+
+
+def _play_key_id(key):
+    text = _norm_play_key(key)
+    if not text:
+        return ""
+    return hashlib.md5(text.encode("utf-8", errors="ignore")).hexdigest()
+
+
+def _cache_ttl():
+    return int(time.time()) + 86400 * 7
+
+
+def _unwrap_cache_value(val):
+    if val is None:
+        return ""
+    if isinstance(val, dict):
+        exp = val.get("expiresAt")
+        if exp is not None and int(exp) < int(time.time()):
+            return ""
+        v = val.get("v")
+        if v is not None:
+            return str(v)
+        return ""
+    text = str(val).strip()
+    if not text or text in ("failed", "None"):
+        return ""
+    if text.startswith("{") and text.endswith("}"):
+        try:
+            return _unwrap_cache_value(json.loads(text))
+        except Exception:
+            pass
+    return text
+
+
+def _spider_cache_get(spider, key, default=""):
+    if not key:
+        return default
+    if spider:
+        try:
+            val = spider.getCache(str(key))
+            text = _unwrap_cache_value(val)
+            if text:
+                return text
+        except Exception:
+            pass
+    http_val = _local_http_cache_get(str(key))
+    if http_val:
+        text = _unwrap_cache_value(http_val)
+        if text:
+            return text
+    return default
+
+
+def _spider_cache_set(spider, key, value, ttl=None):
+    if not key or value in (None, ""):
+        return
+    payload = {"v": str(value), "expiresAt": ttl or _cache_ttl()}
+    if spider:
+        try:
+            spider.setCache(str(key), payload)
+        except Exception:
+            pass
+    try:
+        _local_http_cache_set(str(key), json.dumps(payload, ensure_ascii=False))
+    except Exception:
+        pass
+
+
+def _resolve_spider_proxy(spider):
+    """FongMi Python: proxy://?do=py；旧版 TVBox: http://127.0.0.1:9978/proxy?site=xxx"""
+    if not spider:
+        return ""
+    for call in (
+        lambda: spider.getProxyUrl(),
+        lambda: spider.getProxyUrl(True),
+        lambda: spider.getProxyUrl(False),
+    ):
+        try:
+            raw = str(call() or "").strip()
+            if raw:
+                return raw
+        except Exception:
+            continue
+    return ""
+
+
+def _ensure_local_port():
+    global _LOCAL_PORT
+    if _LOCAL_PORT:
+        return _LOCAL_PORT
+    for port in range(9978, 9999):
+        try:
+            _http_get(f"http://127.0.0.1:{port}/device", timeout=1)
+            _LOCAL_PORT = port
+            return port
+        except Exception:
+            continue
+    _LOCAL_PORT = 9978
+    return _LOCAL_PORT
+
+
+def _local_http_cache_set(key, value, rule=""):
+    if not key or value in (None, ""):
+        return
+    try:
+        port = _ensure_local_port()
+        q = urllib.parse.urlencode({"do": "set", "key": str(key), "rule": rule or ""})
+        url = f"http://127.0.0.1:{port}/cache?{q}"
+        data = urllib.parse.urlencode({"value": str(value)}).encode("utf-8")
+        req = urllib.request.Request(url, data=data, method="POST")
+        urllib.request.urlopen(req, context=_ctx, timeout=3)
+    except Exception:
+        pass
+
+
+def _local_http_cache_get(key, rule=""):
+    if not key:
+        return ""
+    try:
+        port = _ensure_local_port()
+        args = {"do": "get", "key": str(key)}
+        if rule:
+            args["rule"] = str(rule)
+        q = urllib.parse.urlencode(args)
+        text = _http_get(f"http://127.0.0.1:{port}/cache?{q}", timeout=3)
+        if text and text not in ("failed", "None"):
+            return str(text).strip()
+    except Exception:
+        pass
+    return ""
+
+
+def _load_media_title():
+    try:
+        port = _ensure_local_port()
+        text = _http_get(f"http://127.0.0.1:{port}/media", timeout=2)
+        if text and text.strip().startswith("{"):
+            data = json.loads(text)
+            title = clean_name(data.get("title") or "")
+            if title:
+                return title
+    except Exception:
+        pass
+    return ""
+
+
+def resolve_danmu_name(spider, play_id="", flag="", explicit=""):
+    name = clean_name(explicit)
+    if name:
+        return name
+    if spider:
+        name = clean_name(getattr(spider, "_vod_name", "") or "")
+        if name:
+            return name
+    name = _spider_cache_get(spider, "current_vod_name")
+    if name:
+        return clean_name(name)
+    meta = _lookup_play_meta(play_id)
+    if meta.get("name"):
+        return clean_name(meta["name"])
+    vid = _vod_id_from_play_id(play_id)
+    name = load_vod_name(vid, spider)
+    if name:
+        return name
+    name = _spider_cache_get(spider, "danmu_vod_name")
+    if name:
+        return clean_name(name)
+    name = _load_java_danmu_name()
+    if name:
+        return name
+    name = _load_media_title()
+    if name:
+        _spider_cache_set(spider, "current_vod_name", name)
+        return clean_name(name)
+    if isinstance(flag, str) and flag and not re.match(r"^线路?\d+$", flag.strip()):
+        guess = clean_name(re.sub(r"线路\d+", "", flag))
+        if guess and not re.match(r"^第?\d+集?$", guess):
+            return guess
+    for part in str(play_id or "").split("&"):
+        if part.startswith("dmvn="):
+            return clean_name(urllib.parse.unquote(part[5:]))
+    return ""
+
+
+def resolve_danmu_episode(spider, play_id="", flag="", explicit=""):
+    ep = str(explicit or "").strip()
+    if ep:
+        return ep
+    meta = _lookup_play_meta(play_id)
+    if meta.get("ep"):
+        return str(meta["ep"])
+    ep = load_ep_title(play_id, spider)
+    if ep:
+        return ep
+    if spider:
+        ep = (
+            spider._ep_map.get(play_id)
+            or spider._ep_map.get(str(play_id))
+            or spider._ep_map.get(_norm_play_key(play_id))
+        )
+        if ep:
+            return str(ep)
+    if isinstance(flag, str) and flag.strip():
+        return flag.strip()
+    return _load_java_danmu_index() or "1"
+
+
+def build_direct_player_danmu_url(vod_name, vod_index=""):
+    """外网 XML 直连，不依赖 proxy://，OK影视/FongMi 设置里能显示。"""
+    name = clean_name(vod_name)
+    if not name:
+        return ""
+    try:
+        link = resolve_platform_url(name, vod_index)
+        if not link:
+            return ""
+        base = resolve_danmu_api()
+        return (
+            f"{base.rstrip('/')}/api/v2/comment?url="
+            + urllib.parse.quote(link, safe="")
+            + "&format=xml"
+        )
+    except Exception:
+        return ""
+
+
+def _cache_danmu_url(play_key, url, spider=None):
+    pid = _play_key_id(play_key)
+    if not pid or not url:
+        return
+    _DANMU_URL_BY_KEY[pid] = url
+    _spider_cache_set(spider, f"danmu_url_{pid}", url)
+
+
+def load_danmu_url(play_id, spider=None):
+    pid = _play_key_id(play_id)
+    if not pid:
+        return ""
+    if pid in _DANMU_URL_BY_KEY:
+        return _DANMU_URL_BY_KEY[pid]
+    url = _spider_cache_get(spider, f"danmu_url_{pid}")
+    if url:
+        return url
+    return _unwrap_cache_value(_local_http_cache_get(f"danmu_url_{pid}"))
+
+
+def _cache_ep_by_key(play_key, ep_title, spider=None):
+    pid = _play_key_id(play_key)
+    ep = str(ep_title or "").strip()
+    if not pid or not ep:
+        return
+    _EP_BY_KEY[pid] = ep
+    _spider_cache_set(spider, f"danmu_ep_{pid}", ep)
+
+
+def load_ep_title(play_id, spider=None):
+    pid = _play_key_id(play_id)
+    if not pid:
+        return ""
+    if pid in _EP_BY_KEY:
+        return _EP_BY_KEY[pid]
+    return _spider_cache_get(spider, f"danmu_ep_{pid}")
+
+
+def _cache_play_meta(vod_name, play_url, spider=None):
     name = clean_name(vod_name)
     if not play_url:
         return
@@ -120,20 +395,18 @@ def _cache_play_meta(vod_name, play_url):
             key = key.strip()
             if not key:
                 continue
-            _PLAY_VOD[key] = {"name": name, "ep": ep.strip()}
+            meta = {"name": name, "ep": ep.strip()}
+            for variant in {key, _norm_play_key(key), key.replace("&amp;", "&")}:
+                if variant:
+                    _PLAY_VOD[variant] = meta
+            _cache_ep_by_key(key, ep.strip(), spider)
 
 
 def _lookup_play_meta(play_id):
-    pid = str(play_id or "")
-    if not pid:
-        return {}
-    if pid in _PLAY_VOD:
-        return _PLAY_VOD[pid]
-    fixed = pid.rstrip("/")
-    if fixed in _PLAY_VOD:
-        return _PLAY_VOD[fixed]
-    if fixed + "/" in _PLAY_VOD:
-        return _PLAY_VOD[fixed + "/"]
+    pid = _norm_play_key(play_id)
+    for key in (pid, pid.rstrip("/"), pid + "/"):
+        if key in _PLAY_VOD:
+            return _PLAY_VOD[key]
     return {}
 
 
@@ -372,24 +645,24 @@ def fetch_danmu_xml(vod_name, vod_index="", api_base=None):
 
 
 def _discover_jar_proxy_base(force=False):
-    """发现 JAR Proxy 端口（与 Proxy.smali 一致），勿用 Python getProxyUrl。"""
+    """返回 JAR 代理地址，不阻塞扫描端口。"""
+    return _jar_proxy_base()
+
+
+def _jar_proxy_base(spider=None):
     global _JAR_PROXY_BASE
-    if _JAR_PROXY_BASE and not force:
-        return _JAR_PROXY_BASE
-    for port in range(9978, 10000):
-        try:
-            req = urllib.request.Request(
-                f"http://127.0.0.1:{port}/proxy?do=ck",
-                headers={"User-Agent": "Mozilla/5.0"},
-            )
-            with urllib.request.urlopen(req, timeout=2) as resp:
-                if (resp.read() or b"").decode("utf-8", "replace").strip() == "ok":
-                    _JAR_PROXY_BASE = f"http://127.0.0.1:{port}/proxy"
-                    return _JAR_PROXY_BASE
-        except Exception:
-            continue
-    _JAR_PROXY_BASE = "http://127.0.0.1:9978/proxy"
-    return _JAR_PROXY_BASE
+    try:
+        proxy = __import__("com.github.catvod.spider.Proxy", fromlist=["Proxy"])
+        url = str(proxy.getUrl() or "")
+        if "/proxy" in url:
+            base = url.split("?")[0]
+            _JAR_PROXY_BASE = base
+            return base
+    except Exception:
+        pass
+    if _JAR_PROXY_BASE:
+        return _JAR_PROXY_BASE.split("?")[0] if "?" in _JAR_PROXY_BASE else _JAR_PROXY_BASE
+    return "http://127.0.0.1:9978/proxy"
 
 
 def _save_danmu_meta(name, ep):
@@ -408,6 +681,229 @@ def _save_danmu_meta(name, ep):
             jl.a("danmuvodindex", ep)
     except Exception:
         pass
+
+
+def _load_java_danmu_name():
+    try:
+        jl = __import__("com.github.catvod.spider.merge.m.l", fromlist=["l"])
+        name = jl.b("danmuvodname")
+        if name:
+            return clean_name(name)
+        name = jl.b("searchvodname")
+        if name:
+            return clean_name(name)
+    except Exception:
+        pass
+    return clean_name(_DANMU_META.get("name", ""))
+
+
+def _load_java_danmu_index():
+    try:
+        jl = __import__("com.github.catvod.spider.merge.m.l", fromlist=["l"])
+        ep = jl.b("danmuvodindex")
+        if ep:
+            return str(ep)
+    except Exception:
+        pass
+    return str(_DANMU_META.get("index", "") or "")
+
+
+def _call_jar_process_vod(vod):
+    if not isinstance(vod, dict):
+        return
+    try:
+        import json
+        aa = __import__("com.github.catvod.spider.merge.a.a", fromlist=["a"])
+        payload = json.dumps({"list": [vod]}, ensure_ascii=False)
+        aa.processVodData(payload)
+        return
+    except Exception:
+        pass
+
+
+def _call_jar_add_danmaku(raw_json):
+    for mod_path, cls_name in (
+        ("com.github.catvod.spider.merge.a.a", "a"),
+        ("com.github.catvod.spider.merge.b.P", "P"),
+    ):
+        try:
+            mod = __import__(mod_path, fromlist=[cls_name])
+            fn = getattr(mod, "addDanmaku", None)
+            if fn:
+                out = fn(raw_json)
+                if out:
+                    return out
+        except Exception:
+            continue
+    return None
+
+
+def _vod_id_from_play_id(play_id):
+    for part in str(play_id or "").split("&"):
+        if "=" not in part:
+            continue
+        key, val = part.split("=", 1)
+        if key in ("vod_d_id", "vod_id", "vodId"):
+            return val.strip()
+    return ""
+
+
+def _danmu_cache_file():
+    import os
+    candidates = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), ".danmu_vod.json"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "baoge", ".danmu_vod.json"),
+    ]
+    try:
+        from android.os import Environment
+        ext = Environment.getExternalStorageDirectory().getAbsolutePath()
+        candidates.insert(0, os.path.join(ext, "Android", "data", "danmu_vod.json"))
+    except Exception:
+        pass
+    for path in candidates:
+        parent = os.path.dirname(path)
+        if parent and (os.path.isdir(parent) or path == candidates[0]):
+            return path
+    return candidates[0]
+
+
+def _read_vod_cache():
+    import os
+    try:
+        with open(_danmu_cache_file(), "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _write_vod_cache(data):
+    import os
+    try:
+        with open(_danmu_cache_file(), "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def cache_vod_name(vod_id, name, spider=None):
+    vid = str(vod_id or "").strip()
+    title = clean_name(name)
+    if not vid or not title:
+        return
+    _VOD_ID_NAME[vid] = title
+    data = _read_vod_cache()
+    data[vid] = title
+    _write_vod_cache(data)
+    _spider_cache_set(spider, f"danmu_vn_{vid}", title)
+    _spider_cache_set(spider, "danmu_vod_name", title)
+
+
+def load_vod_name(vod_id, spider=None):
+    vid = str(vod_id or "").strip()
+    if vid:
+        if vid in _VOD_ID_NAME:
+            return clean_name(_VOD_ID_NAME[vid])
+        cached = _spider_cache_get(spider, f"danmu_vn_{vid}")
+        if cached:
+            return clean_name(cached)
+        file_name = clean_name(_read_vod_cache().get(vid, ""))
+        if file_name:
+            return file_name
+    return clean_name(_spider_cache_get(spider, "danmu_vod_name"))
+
+
+def _normalize_danmaku_field(result):
+    """兼容旧逻辑；FongMi 官方 DanmakuAdapter 同时支持字符串与数组。"""
+    if not isinstance(result, dict):
+        return result
+    dan = result.get("danmaku")
+    if isinstance(dan, str) and dan.strip():
+        return result
+    if isinstance(dan, list) and dan:
+        fixed = []
+        for item in dan:
+            if isinstance(item, dict) and item.get("url"):
+                fixed.append({"name": item.get("name") or "弹幕", "url": item["url"]})
+            elif isinstance(item, str) and item.strip():
+                fixed.append({"name": "弹幕", "url": item.strip()})
+        if fixed:
+            result["danmaku"] = fixed
+    elif isinstance(result.get("danmu"), str) and result.get("danmu").strip():
+        result["danmaku"] = result["danmu"].strip()
+    return result
+
+
+def _apply_danmaku_fields(result, url):
+    url = str(url or "").strip()
+    if not url:
+        return result
+    # 与 JAR addDanmaku 一致：字符串 danmaku，FongMi DanmakuAdapter 原生支持
+    result["danmaku"] = url
+    result["danmu"] = url
+    result["click"] = url
+    return result
+
+
+def _danmu_proxy_response(xml_text):
+    text = xml_text if isinstance(xml_text, str) else (xml_text or empty_xml())
+    if isinstance(text, str):
+        body = text.encode("utf-8")
+    else:
+        body = text
+    try:
+        from java.io import ByteArrayInputStream
+        return [200, "application/xml", ByteArrayInputStream(body)]
+    except Exception:
+        return [200, "application/xml", text if isinstance(text, str) else body]
+
+
+def _attach_danmaku_url(result, vod_name, vod_index="", spider=None, play_id=""):
+    try:
+        if not isinstance(result, dict):
+            return result
+        name = clean_name(vod_name)
+        if not name:
+            return result
+        ep = str(vod_index or "").strip() or str(parse_episode(vod_index or name))
+        _save_danmu_meta(name, ep)
+        url = load_danmu_url(play_id, spider) or build_danmu_url(spider, name, ep, play_id=play_id)
+        try:
+            jar_raw = _call_jar_add_danmaku(json.dumps(result, ensure_ascii=False))
+            if jar_raw:
+                jar_obj = json.loads(jar_raw)
+                jdan = jar_obj.get("danmaku")
+                if isinstance(jdan, str) and jdan.strip():
+                    url = jdan.strip()
+                elif isinstance(jdan, list) and jdan:
+                    first = jdan[0]
+                    if isinstance(first, dict) and first.get("url"):
+                        url = first["url"]
+                    elif isinstance(first, str) and first.strip():
+                        url = first.strip()
+        except Exception:
+            pass
+        return _apply_danmaku_fields(result, url)
+    except Exception:
+        return result
+
+
+def jar_add_danmaku_to_result(result, vod_name="", episode="", spider=None, play_id="", flag=""):
+    """FongMi/OK影视：danmaku 字符串 + click，与 JAR 源一致。"""
+    try:
+        if not isinstance(result, dict):
+            return result
+        name = clean_name(vod_name) or resolve_danmu_name(spider, play_id, flag)
+        ep = resolve_danmu_episode(spider, play_id, flag, episode)
+        if not name:
+            return result
+        return _attach_danmaku_url(result, name, ep, spider=spider, play_id=play_id)
+    except Exception:
+        return result
+
+
+def attach_danmaku(spider, result, vod_name, vod_index="", play_id=""):
+    return jar_add_danmaku_to_result(result, vod_name, vod_index, spider=spider, play_id=play_id)
 
 
 def _read_java_stream(stream):
@@ -478,48 +974,72 @@ def _proxy_append(base, query):
     return f"{base}{sep}{query}"
 
 
-def _jar_proxy_base(spider=None):
-    return _discover_jar_proxy_base()
-
-
 def build_py_danmu_url(spider, vod_name, vod_index=""):
     """Python 源：走 getProxyUrl + type=danmu，由 localProxy 返回 XML。"""
+    base = _resolve_spider_proxy(spider)
+    if not base:
+        return ""
     name = _url_param(clean_name(vod_name))
     ep = _url_param(vod_index or "")
-    try:
-        base = spider.getProxyUrl() or ""
-    except Exception:
-        base = ""
-    if base and "/proxy" in base:
-        return _proxy_append(base, f"type=danmu&vodName={name}&vodIndex={ep}")
-    return ""
+    return _proxy_append(base, f"type=danmu&vodName={name}&vodIndex={ep}")
 
 
 def build_appdanmu_url(spider, vod_name, vod_index=""):
-    """JAR 源：走 /proxy?do=appdanmu（与独播一致）。"""
+    return build_danmu_url(spider, vod_name, vod_index)
+
+
+def _build_proxy_danmu_url(spider, name, ep):
+    nv = _url_param(clean_name(name))
+    ev = _url_param(ep or "")
+    py = _resolve_spider_proxy(spider)
+    if py:
+        return _proxy_append(py, f"type=appdanmu&vodName={nv}&vodIndex={ev}")
+    try:
+        proxy = __import__("com.github.catvod.spider.Proxy", fromlist=["Proxy"])
+        jar_url = str(proxy.getUrl() or "").strip()
+        if jar_url:
+            return _proxy_append(jar_url, f"do=appdanmu&vodName={nv}&vodIndex={ev}")
+    except Exception:
+        pass
     base = _jar_proxy_base(spider)
-    name = _url_param(clean_name(vod_name))
-    ep = _url_param(vod_index or "")
-    return f"{base}?do=appdanmu&vodName={name}&vodIndex={ep}"
+    return f"{base}?do=appdanmu&vodName={nv}&vodIndex={ev}"
 
 
-def build_danmu_url(spider, vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
-    """与独播一致：统一走 JAR /proxy?do=appdanmu&vodName=&vodIndex="""
-    return build_appdanmu_url(spider, vod_name, vod_index)
-
-
-def attach_danmaku(spider, result, vod_name, vod_index=""):
+def build_danmu_url(spider, vod_name, vod_index="", api_base=DEFAULT_DANMU_API, play_id=""):
+    """播放时只用缓存/本地代理，避免 30s 超时内拉 360 链接。"""
     name = clean_name(vod_name)
-    if not isinstance(result, dict) or not name:
-        return result
+    if not name:
+        return ""
     ep = str(vod_index or "").strip() or str(parse_episode(vod_index or name))
-    _save_danmu_meta(name, ep)
-    url = build_danmu_url(spider, name, ep)
-    if not url:
-        return result
-    result["danmaku"] = url
-    result["danmu"] = url
-    return result
+    cached = load_danmu_url(play_id, spider) if play_id else ""
+    if cached:
+        return cached
+    return _build_proxy_danmu_url(spider, name, ep)
+
+
+def _precache_direct_danmu(spider, vod_name, play_url):
+    title = clean_name(vod_name)
+    if not title or not play_url:
+        return
+    for block in str(play_url).split("$$$"):
+        for item in block.split("#"):
+            item = item.strip()
+            if not item or "$" not in item:
+                continue
+            ep, key = item.split("$", 1)
+            key = key.strip()
+            ep = ep.strip()
+            if not key:
+                continue
+            try:
+                direct = build_direct_player_danmu_url(title, ep)
+                if direct:
+                    _cache_danmu_url(key, direct, spider)
+                    break
+            except Exception:
+                pass
+        if _DANMU_URL_BY_KEY:
+            break
 
 
 def init_spider_cache(spider):
@@ -531,10 +1051,13 @@ def init_spider_cache(spider):
 
 def remember_playlist(spider, vod_name="", play_url=""):
     init_spider_cache(spider)
-    if vod_name:
-        spider._vod_name = clean_name(vod_name)
+    title = clean_name(vod_name)
+    if title:
+        spider._vod_name = title
+        _spider_cache_set(spider, "danmu_vod_name", title)
+        _spider_cache_set(spider, "current_vod_name", title)
     spider._ep_map = {}
-    _cache_play_meta(vod_name, play_url)
+    _cache_play_meta(vod_name, play_url, spider)
     if not play_url:
         return
     for block in str(play_url).split("$$$"):
@@ -543,28 +1066,48 @@ def remember_playlist(spider, vod_name="", play_url=""):
             if not item or "$" not in item:
                 continue
             ep, key = item.split("$", 1)
-            spider._ep_map[key.strip()] = ep.strip()
+            key = key.strip()
+            ep = ep.strip()
+            spider._ep_map[key] = ep
+            _cache_ep_by_key(key, ep, spider)
+    try:
+        _precache_direct_danmu(spider, title, play_url)
+    except Exception:
+        pass
 
 
 def remember_from_vod(spider, vod):
-    if isinstance(vod, dict):
-        remember_playlist(spider, vod.get("vod_name", ""), vod.get("vod_play_url", ""))
+    try:
+        if isinstance(vod, dict):
+            name = vod.get("vod_name", "")
+            vid = vod.get("vod_id", "")
+            remember_playlist(spider, name, vod.get("vod_play_url", ""))
+            cache_vod_name(vid, name, spider)
+            if vid:
+                _spider_cache_set(spider, "current_vod_id", str(vid))
+            _save_danmu_meta(name, "")
+            _call_jar_process_vod(vod)
+    except Exception:
+        pass
 
 
-def attach_player(spider, result, play_id, flag=""):
-    init_spider_cache(spider)
-    meta = _lookup_play_meta(play_id)
-    ep = meta.get("ep") or spider._ep_map.get(play_id) or spider._ep_map.get(str(play_id)) or flag or ""
-    name = meta.get("name") or spider._vod_name
-    if not name and isinstance(flag, str) and flag:
-        name = clean_name(re.sub(r"线路\d+", "", flag))
-    if not name and isinstance(result, dict):
-        for key in ("vod_name", "name", "title"):
-            val = result.get(key)
-            if val:
-                name = clean_name(str(val))
-                break
-    return attach_danmaku(spider, result, name, ep)
+def attach_player(spider, result, play_id, flag="", vod_name="", ep_name=""):
+    try:
+        init_spider_cache(spider)
+        return jar_add_danmaku_to_result(
+            result,
+            vod_name or getattr(spider, "_vod_name", ""),
+            ep_name,
+            spider=spider,
+            play_id=play_id,
+            flag=flag,
+        )
+    except Exception:
+        return result
+
+
+def finalize_player(spider, result, play_id="", flag="", vod_name="", ep_name=""):
+    return attach_player(spider, result, play_id, flag, vod_name, ep_name)
 
 
 def _is_danmu_request(params):
@@ -579,13 +1122,18 @@ def handle_danmu_proxy(params, api_base=None):
         params.get("vodName")
         or params.get("vodname")
         or params.get("name")
+        or _load_java_danmu_name()
         or _DANMU_META.get("name")
         or ""
     )
+    if not name:
+        vid = _vod_id_from_play_id(params.get("vod_d_id") or params.get("vod_id") or "")
+        name = load_vod_name(vid)
     ep = (
         params.get("vodIndex")
         or params.get("vodindex")
         or params.get("index")
+        or _load_java_danmu_index()
         or _DANMU_META.get("index")
         or ""
     )
@@ -594,7 +1142,7 @@ def handle_danmu_proxy(params, api_base=None):
         xml = _fetch_appdanmu_via_jar_http(name, ep)
     if not xml or "<d " not in xml:
         xml, _source = fetch_danmu_xml(name, ep, api_base=api_base)
-    return [200, "application/xml", xml or empty_xml()]
+    return _danmu_proxy_response(xml or empty_xml())
 
 
 def proxy_with_danmu(params, fallback=None, api_base=DEFAULT_DANMU_API):

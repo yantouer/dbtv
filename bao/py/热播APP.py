@@ -132,8 +132,12 @@ class Spider(Spider):
             h['User-Agent'] = ids['u']
         result = {'parse': 0, 'url': url, 'header': h}
         try:
-            from danmu_util import attach_player
-            attach_player(self, result, id, flag)
+            from danmu_util import finalize_player
+            finalize_player(
+                self, result, id, flag,
+                getattr(self, "_vod_name", ""),
+                getattr(self, "_ep_map", {}).get(id, flag),
+            )
         except Exception:
             pass
         return result
