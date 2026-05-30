@@ -1,9 +1,9 @@
 {
-  "spider": "./jar/custom_spider.jar;md5;01b041f86da9b0aa3c7770e077d70884",
+  "spider": "./jar/custom_spider.jar;md5;d33274711650e87dd11f445fffdb667b",
   "sites": [
     {
       "key": "douban",
-      "name": "宝哥推荐",
+      "name": "豆瓣",
       "type": 3,
       "api": "csp_Douban",
       "searchable": 0,
@@ -15,7 +15,18 @@
       "type": 3,
       "api": "csp_Gz360",
       "searchable": 1,
+      "quickSearch": 1,
       "changeable": 1
+    },
+    {
+      "key": "jpys",
+      "name": "金牌影视",
+      "type": 3,
+      "api": "csp_Jpys",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "ext": "https://y2s52n7.com,https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn,https://m.sdzhgt.com"
     },
     {
       "key": "duboku",
@@ -38,14 +49,25 @@
       "ext": "https://www.czzymovie.com"
     },
     {
-      "key": "jpys",
-      "name": "金牌影视",
+      "key": "guazi_py",
+      "name": "瓜子影视(备)",
       "type": 3,
-      "api": "csp_Jpys",
+      "api": "./py/瓜子.py",
       "searchable": 1,
-      "quickSearch": 1,
+      "quickSearch": 0,
       "changeable": 1,
-      "ext": "https://m.610pkea.com,https://y2s52n7.com,https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn"
+      "filterable": 1
+    },
+    {
+      "key": "jpys_py",
+      "name": "金牌影视(备)",
+      "type": 3,
+      "api": "./py/金牌.py",
+      "searchable": 1,
+      "quickSearch": 0,
+      "changeable": 1,
+      "filterable": 1,
+      "ext": "https://y2s52n7.com,https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn,https://m.sdzhgt.com"
     },
     {
       "key": "chaoliu",
@@ -53,7 +75,7 @@
       "type": 3,
       "api": "csp_AppRJ",
       "searchable": 1,
-      "quickSearch": 1,
+      "quickSearch": 0,
       "changeable": 1,
       "ext": {
         "url": "http://v.rbotv.cn"
@@ -65,7 +87,7 @@
       "type": 3,
       "api": "csp_SP360",
       "searchable": 1,
-      "quickSearch": 1,
+      "quickSearch": 0,
       "changeable": 0
     },
     {
@@ -77,6 +99,16 @@
       "quickSearch": 1,
       "changeable": 1,
       "ext": "https://vip.wwgz.cn:5200"
+    },
+    {
+      "key": "nongmin_py",
+      "name": "农民影视(备)",
+      "type": 3,
+      "api": "./py/农民.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1
     },
     {
       "key": "nongmin_xyq",
@@ -150,6 +182,63 @@
       "quickSearch": 1,
       "changeable": 1,
       "ext": "https://shdy5.us"
+    },
+    {
+      "key": "saohuo_py",
+      "name": "骚火影视(备)",
+      "type": 3,
+      "api": "./py/骚火影视.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1
+    },
+    {
+      "key": "rbapp",
+      "name": "热播短剧",
+      "type": 3,
+      "api": "./py/热播APP.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1
+    },
+    {
+      "key": "ddgui",
+      "name": "达达龟影院",
+      "type": 3,
+      "api": "./py/达达龟影院.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1,
+      "filterable": 1
+    },
+    {
+      "key": "fantuan",
+      "name": "饭团影视",
+      "type": 3,
+      "api": "./py/饭团影视.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1
+    },
+    {
+      "key": "lieshou",
+      "name": "猎手影视",
+      "type": 3,
+      "api": "./py/猎手影视.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1
+    },
+    {
+      "key": "dmbashi",
+      "name": "动漫巴士",
+      "type": 3,
+      "api": "./py/动漫巴士.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 1
     },
     {
       "key": "manbo",
