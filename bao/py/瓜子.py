@@ -256,6 +256,11 @@ class Spider(Spider):
                         if "$" in item:
                             title, param = item.split("$", 1)
                             self._ep_map[param] = title
+                try:
+                    from danmu_util import remember_from_vod
+                    remember_from_vod(self, video_detail)
+                except Exception:
+                    pass
 
             return {'list': [video_detail]}
 
@@ -314,9 +319,8 @@ class Spider(Spider):
                 return {"parse": 0, "jx": 0, "playUrl": "", "url": ""}
             result = {"parse": 0, "jx": 0, "playUrl": "", "url": url}
             try:
-                from danmu_util import attach_danmaku
-                ep = self._ep_map.get(id, flag)
-                attach_danmaku(self, result, self._vod_name, ep)
+                from danmu_util import attach_player
+                attach_player(self, result, id, flag)
             except Exception:
                 pass
             return result

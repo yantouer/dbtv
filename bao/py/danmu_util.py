@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""弹幕工具：360影视 + danmu_api 公共接口，供 Python 源 localProxy 使用。"""
+"""弹幕工具：走 Python/JAR 本地代理拉 XML，不直连外网。"""
 import json
 import random
 import re
@@ -30,6 +30,44 @@ _ctx = ssl.create_default_context()
 _ctx.check_hostname = False
 _ctx.verify_mode = ssl.CERT_NONE
 
+# TVBox 播放时会新建 Spider 实例，片名/集数需跨实例缓存
+_PLAY_VOD = {}
+
+
+def _url_param(text):
+    """与独播一致：片名/集数不做 percent 编码。"""
+    return str(text or "")
+
+
+def _cache_play_meta(vod_name, play_url):
+    name = clean_name(vod_name)
+    if not play_url:
+        return
+    for block in str(play_url).split("$$$"):
+        for item in block.split("#"):
+            item = item.strip()
+            if not item or "$" not in item:
+                continue
+            ep, key = item.split("$", 1)
+            key = key.strip()
+            if not key:
+                continue
+            _PLAY_VOD[key] = {"name": name, "ep": ep.strip()}
+
+
+def _lookup_play_meta(play_id):
+    pid = str(play_id or "")
+    if not pid:
+        return {}
+    if pid in _PLAY_VOD:
+        return _PLAY_VOD[pid]
+    fixed = pid.rstrip("/")
+    if fixed in _PLAY_VOD:
+        return _PLAY_VOD[fixed]
+    if fixed + "/" in _PLAY_VOD:
+        return _PLAY_VOD[fixed + "/"]
+    return {}
+
 
 def _http_get(url, timeout=45):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -38,7 +76,9 @@ def _http_get(url, timeout=45):
 
 
 def clean_name(name):
-    name = re.sub(r"[（(【<][臻真]彩[）)】>]", "", name or "")
+    name = re.sub(r"<[^>]+>", "", name or "")
+    name = re.sub(r"[（(【<][臻真]彩[）)】>]", "", name)
+    name = re.sub(r"[\[\]【】]", "", name)
     return name.strip()
 
 
@@ -94,7 +134,13 @@ def search_360_playlink(name, episode=1):
         data = json.loads(_http_get(url, 20))
     except Exception:
         return ""
-    rows = data.get("data", {}).get("longData", {}).get("rows", [])
+    long_data = (data.get("data") or {}).get("longData")
+    if isinstance(long_data, list):
+        rows = long_data
+    elif isinstance(long_data, dict):
+        rows = long_data.get("rows") or []
+    else:
+        rows = []
     if not rows:
         return ""
     for cat in ("电视剧", "电影", "动漫"):
@@ -129,6 +175,31 @@ def search_360_playlink(name, episode=1):
     if 0 <= idx < len(series):
         return _norm_platform_url((series[idx] or {}).get("url", ""))
     return ""
+
+
+def resolve_platform_url(vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
+    name = clean_name(vod_name)
+    if not name:
+        return ""
+    episode = parse_episode(vod_index or vod_name)
+    link = search_360_playlink(name, episode)
+    if link:
+        return link
+    if episode != 1:
+        return search_360_playlink(name, 1)
+    return ""
+
+
+def build_direct_danmu_url(vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
+    """直连 XML（仅调试用，播放器请走 build_danmu_url）。"""
+    link = resolve_platform_url(vod_name, vod_index, api_base)
+    if not link:
+        return ""
+    return (
+        f"{api_base.rstrip('/')}/api/v2/comment?url="
+        + urllib.parse.quote(link)
+        + "&format=xml"
+    )
 
 
 def fetch_xml_by_video_url(video_url, api_base=DEFAULT_DANMU_API):
@@ -191,35 +262,83 @@ def fetch_danmu_xml(vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
     name = clean_name(vod_name)
     if not name:
         return empty_xml()
-    episode = parse_episode(vod_index or vod_name)
-    video_url = search_360_playlink(name, episode)
-    if video_url:
-        xml = fetch_xml_by_video_url(video_url, api_base)
+    link = resolve_platform_url(name, vod_index, api_base)
+    if link:
+        xml = fetch_xml_by_video_url(link, api_base)
         if xml:
             return xml
-        xml = fetch_dmku_json(video_url)
+        xml = fetch_dmku_json(link)
         if xml:
             return xml
-    if episode != 1:
-        video_url = search_360_playlink(name, 1)
-        if video_url:
-            xml = fetch_xml_by_video_url(video_url, api_base)
-            if xml:
-                return xml
     return empty_xml()
 
 
-def danmu_proxy_url(spider, vod_name, vod_index=""):
-    base = spider.getProxyUrl()
-    return (
-        f"{base}&do=danmu&vodName={urllib.parse.quote(str(vod_name or ''))}"
-        f"&vodIndex={urllib.parse.quote(str(vod_index or ''))}"
-    )
+def _proxy_append(base, query):
+    base = (base or "").strip()
+    if not base:
+        return ""
+    sep = "&" if "?" in base else "?"
+    return f"{base}{sep}{query}"
+
+
+def _jar_proxy_base(spider):
+    raw = ""
+    try:
+        raw = spider.getProxyUrl() or ""
+    except Exception:
+        pass
+    if "/proxy" in raw:
+        return raw.split("?")[0]
+    for port in (9978, 9977, 9979):
+        try:
+            req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/proxy?do=ck",
+                headers={"User-Agent": "Mozilla/5.0"},
+            )
+            with urllib.request.urlopen(req, timeout=2) as resp:
+                if (resp.read() or b"").decode("utf-8", "replace").strip() == "ok":
+                    return f"http://127.0.0.1:{port}/proxy"
+        except Exception:
+            continue
+    return "http://127.0.0.1:9978/proxy"
+
+
+def build_py_danmu_url(spider, vod_name, vod_index=""):
+    """Python 源：走 getProxyUrl + type=danmu，由 localProxy 返回 XML。"""
+    name = _url_param(clean_name(vod_name))
+    ep = _url_param(vod_index or "")
+    try:
+        base = spider.getProxyUrl() or ""
+    except Exception:
+        base = ""
+    if base and "/proxy" in base:
+        return _proxy_append(base, f"type=danmu&vodName={name}&vodIndex={ep}")
+    return ""
+
+
+def build_appdanmu_url(spider, vod_name, vod_index=""):
+    """JAR 源：走 /proxy?do=appdanmu（与独播一致）。"""
+    base = _jar_proxy_base(spider)
+    name = _url_param(clean_name(vod_name))
+    ep = _url_param(vod_index or "")
+    return f"{base}?do=appdanmu&vodName={name}&vodIndex={ep}"
+
+
+def build_danmu_url(spider, vod_name, vod_index="", api_base=DEFAULT_DANMU_API):
+    """与独播一致：统一走 JAR /proxy?do=appdanmu&vodName=&vodIndex="""
+    return build_appdanmu_url(spider, vod_name, vod_index)
 
 
 def attach_danmaku(spider, result, vod_name, vod_index=""):
-    if isinstance(result, dict) and vod_name:
-        result["danmaku"] = danmu_proxy_url(spider, vod_name, vod_index)
+    name = clean_name(vod_name)
+    if not isinstance(result, dict) or not name:
+        return result
+    ep = str(vod_index or "").strip() or str(parse_episode(vod_index or name))
+    url = build_danmu_url(spider, name, ep)
+    if not url:
+        return result
+    result["danmaku"] = url
+    result["danmu"] = url
     return result
 
 
@@ -233,8 +352,9 @@ def init_spider_cache(spider):
 def remember_playlist(spider, vod_name="", play_url=""):
     init_spider_cache(spider)
     if vod_name:
-        spider._vod_name = str(vod_name).strip()
+        spider._vod_name = clean_name(vod_name)
     spider._ep_map = {}
+    _cache_play_meta(vod_name, play_url)
     if not play_url:
         return
     for block in str(play_url).split("$$$"):
@@ -253,8 +373,34 @@ def remember_from_vod(spider, vod):
 
 def attach_player(spider, result, play_id, flag=""):
     init_spider_cache(spider)
-    ep = spider._ep_map.get(play_id, flag)
-    return attach_danmaku(spider, result, spider._vod_name, ep)
+    meta = _lookup_play_meta(play_id)
+    ep = meta.get("ep") or spider._ep_map.get(play_id) or spider._ep_map.get(str(play_id)) or flag or ""
+    name = meta.get("name") or spider._vod_name
+    if not name and isinstance(flag, str) and flag:
+        name = clean_name(re.sub(r"线路\d+", "", flag))
+    if not name and isinstance(result, dict):
+        for key in ("vod_name", "name", "title"):
+            val = result.get(key)
+            if val:
+                name = clean_name(str(val))
+                break
+    return attach_danmaku(spider, result, name, ep)
+
+
+def _is_danmu_request(params):
+    do = (params or {}).get("do") or (params or {}).get("type") or ""
+    return do in ("danmu", "appdanmu")
+
+
+def handle_danmu_proxy(params, api_base=DEFAULT_DANMU_API):
+    if not _is_danmu_request(params):
+        return None
+    xml = fetch_danmu_xml(
+        params.get("vodName") or params.get("vodname") or params.get("name") or "",
+        params.get("vodIndex") or params.get("vodindex") or params.get("index") or "",
+        api_base=api_base,
+    )
+    return [200, "application/xml", xml]
 
 
 def proxy_with_danmu(params, fallback=None, api_base=DEFAULT_DANMU_API):
@@ -262,14 +408,3 @@ def proxy_with_danmu(params, fallback=None, api_base=DEFAULT_DANMU_API):
     if hit:
         return hit
     return fallback(params) if fallback else None
-
-
-def handle_danmu_proxy(params, api_base=DEFAULT_DANMU_API):
-    if (params or {}).get("do") != "danmu":
-        return None
-    xml = fetch_danmu_xml(
-        params.get("vodName") or params.get("vodname") or "",
-        params.get("vodIndex") or params.get("vodindex") or "",
-        api_base=api_base,
-    )
-    return [200, "application/xml", xml]

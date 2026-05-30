@@ -72,6 +72,11 @@ class Spider(BaseSpider):
                     if "$" in item:
                         ep_name, link = item.split("$", 1)
                         self._page_eps[self._fix_url(link)] = ep_name
+            try:
+                from danmu_util import remember_from_vod
+                remember_from_vod(self, vod)
+            except Exception:
+                pass
             return {"list": [vod]}
         except:
             return {"list": []}
@@ -129,7 +134,7 @@ class Spider(BaseSpider):
 
             # 1. 页面直接带流
             for u in self._extract_urls(html):
-                if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
+                if self.is_valid_video(u): return self._play(u, vod_name, ep_name, page_url)
 
             if not original_vid:
                 return {"parse": 1, "playUrl": "", "url": page_url, "header": self.headers}
@@ -137,7 +142,7 @@ class Spider(BaseSpider):
             # 2. 前端直连解密 (非自建解析线路)
             if not any(k in str(flag).lower() for k in ['zl', 'yd', '1080zyk', 'yynb', 'ace', '自建', 'yz']):
                 for u in self._get_candidates(original_vid, encrypt):
-                    if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
+                    if self.is_valid_video(u): return self._play(u, vod_name, ep_name, page_url)
 
             # 3. 后端解析核心处理
             jx_url = f"{self.host}/jx/player.php?vid={urllib.parse.quote(original_vid, safe='')}"
@@ -150,12 +155,12 @@ class Spider(BaseSpider):
                     info = data.get("data", {})
                     cipher = info.get("url") or info.get("vid") or ""
                     for u in self._get_candidates(cipher, int(str(info.get("urlmode", "0")) or 0)):
-                        if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
+                        if self.is_valid_video(u): return self._play(u, vod_name, ep_name, page_url)
 
             # 3.2 jx/player.php 页面爬取嗅探
             for _ in range(2):
                 u = self._sniff_jx(jx_url, page_url, cookie)
-                if self.is_valid_video(u): return self._play(u, vod_name, ep_name)
+                if self.is_valid_video(u): return self._play(u, vod_name, ep_name, page_url)
 
             # 4. WebView 嗅探兜底
             return {"parse": 1, "playUrl": "", "url": jx_url, "header": {"User-Agent": self.headers["User-Agent"], "Referer": page_url}}
@@ -261,7 +266,7 @@ class Spider(BaseSpider):
         if hasattr(rsp, "cookies"): arr.extend(f"{k}={v}" for k, v in rsp.cookies.items())
         return "; ".join(arr)
 
-    def _play(self, url, vod_name="", ep_name=""):
+    def _play(self, url, vod_name="", ep_name="", play_id=""):
         url = str(url).strip()
         header = {"User-Agent": self.headers["User-Agent"]}
         
@@ -287,8 +292,8 @@ class Spider(BaseSpider):
             
         result = {"parse": 0, "playUrl": "", "url": url, "header": header}
         try:
-            from danmu_util import attach_danmaku
-            attach_danmaku(self, result, vod_name, ep_name)
+            from danmu_util import attach_player
+            attach_player(self, result, play_id or url, ep_name)
         except Exception:
             pass
         return result
