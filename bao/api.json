@@ -1,6 +1,14 @@
 {
-  "spider": "./jar/custom_spider.jar;md5;7e5ac81d71860e629505fdfc822bfbe3",
+  "spider": "./jar/custom_spider.jar;md5;8453ed6ccac96fa9ffdf66c0652d5f6c",
   "sites": [
+    {
+      "key": "douban_hot",
+      "name": "豆瓣热搜",
+      "type": 3,
+      "api": "./py/豆瓣热搜.py",
+      "searchable": 0,
+      "changeable": 0
+    },
     {
       "key": "douban",
       "name": "豆瓣",

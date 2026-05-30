@@ -273,6 +273,10 @@ class Spider(BaseSpider):
                 url += "#.mp4"
         else:
             header["Referer"] = self.host
+            if ".m3u8" in url.lower() or "m3u8?" in url.lower():
+                import base64
+                b64url = base64.b64encode(url.encode("utf-8")).decode("utf-8")
+                url = f"{self.getProxyUrl()}&do=bgad&url={b64url}"
             
         return {"parse": 0, "playUrl": "", "url": url, "header": header}
 
