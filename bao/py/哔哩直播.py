@@ -37,8 +37,17 @@ xurl = "https://search.bilibili.com"
 xurl1 = "https://api.live.bilibili.com"
 
 headerx = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0'
-          }
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0',
+    'Referer': 'https://live.bilibili.com/',
+    'Origin': 'https://live.bilibili.com',
+}
+
+PLAY_HEADERS = {
+    'User-Agent': headerx['User-Agent'],
+    'Referer': 'https://live.bilibili.com/',
+    'Origin': 'https://live.bilibili.com',
+    'Accept': '*/*',
+}
 
 class Spider(Spider):
     global xurl
@@ -139,46 +148,52 @@ class Spider(Spider):
     def homeVideoContent(self):
         pass
 
+    def _parse_live_cards(self, html):
+        doc = BeautifulSoup(html, "lxml")
+        soups = doc.find_all('div', class_="video-list-item")
+        if not soups:
+            soups = doc.select('.bili-live-card, .live-card')
+        videos = []
+        for vod in soups:
+            names = vod.find('h3', class_="bili-live-card__info--tit")
+            if not names:
+                names = vod.select_one('.bili-live-card__info--tit, .live-card-title, h3')
+            if not names:
+                continue
+            name = names.text.strip().replace('直播中', '')
+            link = names.find('a') or vod.find('a')
+            if not link or not link.get('href'):
+                continue
+            vid = self.extract_middle_text(link['href'], 'bilibili.com/', '?', 0)
+            if not vid:
+                m = re.search(r'/(\d+)', link['href'])
+                vid = m.group(1) if m else ''
+            if not vid:
+                continue
+            img = vod.find('img')
+            pic = img.get('src') if img else ''
+            if pic and 'http' not in pic:
+                pic = "https:" + pic
+            remarks = vod.find('a', class_="bili-live-card__info--uname")
+            remark = remarks.text.strip() if remarks else ''
+            videos.append({
+                "vod_id": vid,
+                "vod_name": name,
+                "vod_pic": pic,
+                "vod_remarks": remark,
+            })
+        return videos
+
     def categoryContent(self, cid, pg, filter, ext):
         result = {}
-        videos = []
-
         if pg:
             page = int(pg)
         else:
             page = 1
-
         url = f'{xurl}/live?keyword={cid}&page={str(page)}'
-        detail = requests.get(url=url, headers=headerx)
+        detail = requests.get(url=url, headers=headerx, timeout=15)
         detail.encoding = "utf-8"
-        res = detail.text
-        doc = BeautifulSoup(res, "lxml")
-
-        soups = doc.find_all('div', class_="video-list-item")
-
-        for vod in soups:
-
-            names = vod.find('h3', class_="bili-live-card__info--tit")
-            name = names.text.strip().replace('直播中', '')
-
-            id = names.find('a')['href']
-            id = self.extract_middle_text(id, 'bilibili.com/', '?', 0)
-
-            pic = vod.find('img')['src']
-            if 'http' not in pic:
-                pic = "https:" + pic
-
-            remarks = vod.find('a', class_="bili-live-card__info--uname")
-            remark = remarks.text.strip()
-
-            video = {
-                "vod_id": id,
-                "vod_name": name,
-                "vod_pic": pic,
-                "vod_remarks": remark
-                    }
-            videos.append(video)
-
+        videos = self._parse_live_cards(detail.text)
         result = {'list': videos}
         result['page'] = pg
         result['pagecount'] = 9999
@@ -186,107 +201,116 @@ class Spider(Spider):
         result['total'] = 999999
         return result
 
+    def _build_bili_play_lines(self, room_id):
+        lines = []
+        play = requests.get(
+            f'{xurl1}/room/v1/Room/playUrl',
+            params={'cid': room_id, 'qn': 10000, 'platform': 'web'},
+            headers=PLAY_HEADERS,
+            timeout=15,
+        ).json()
+        if play.get('code') == 0:
+            play_data = play.get('data') or {}
+            quality_desc = {
+                item['qn']: item['desc']
+                for item in play_data.get('quality_description', [])
+                if isinstance(item, dict)
+            }
+            for qn in sorted(
+                [int(q) for q in play_data.get('accept_quality', []) if str(q).isdigit()],
+                reverse=True,
+            ):
+                qn_play = requests.get(
+                    f'{xurl1}/room/v1/Room/playUrl',
+                    params={'cid': room_id, 'qn': qn, 'platform': 'web'},
+                    headers=PLAY_HEADERS,
+                    timeout=15,
+                ).json()
+                if qn_play.get('code') != 0:
+                    continue
+                durl = (qn_play.get('data') or {}).get('durl') or []
+                if not durl:
+                    continue
+                name = quality_desc.get(qn, f'清晰度{qn}')
+                lines.append((name, durl[0].get('url') or ''))
+            if lines:
+                return lines
+
+        detail = requests.get(
+            f'{xurl1}/xlive/web-room/v2/index/getRoomPlayInfo',
+            params={
+                'room_id': room_id,
+                'platform': 'web',
+                'protocol': '0,1',
+                'format': '0,1,2',
+                'codec': '0,1',
+            },
+            headers=PLAY_HEADERS,
+            timeout=15,
+        ).json()
+        if detail.get('code') != 0:
+            return lines
+        streams = (
+            detail.get('data', {})
+            .get('playurl_info', {})
+            .get('playurl', {})
+            .get('stream', [])
+        )
+        idx = 0
+        for stream in streams:
+            for fmt in stream.get('format') or []:
+                for codec in fmt.get('codec') or []:
+                    base = codec.get('base_url') or ''
+                    for info in codec.get('url_info') or []:
+                        host = info.get('host') or ''
+                        extra = info.get('extra') or ''
+                        url = f"{host}{base}{extra}"
+                        if url.startswith('http'):
+                            idx += 1
+                            lines.append((f'{idx}号线路', url))
+        return lines
+
     def detailContent(self, ids):
         did = ids[0]
         result = {}
         videos = []
-        xianlu = ''
-        bofang = ''
-
-        url = f'{xurl1}/xlive/web-room/v2/index/getRoomPlayInfo?room_id={did}&platform=web&protocol=0,1&format=0,1,2&codec=0,1'
-        detail = requests.get(url=url, headers=headerx)
-        detail.encoding = "utf-8"
-        data = detail.json()
-
-        content = '欢迎观看哔哩直播'
-
-        setup = data['data']['playurl_info']['playurl']['stream']
-
-        nam = 0
-
-        for vod in setup:
-
-            try:
-                host = vod['format'][nam]['codec'][0]['url_info'][1]['host']
-            except (KeyError, IndexError):
-                continue
-
-            base = vod['format'][nam]['codec'][0]['base_url']
-
-            extra = vod['format'][nam]['codec'][0]['url_info'][1]['extra']
-
-            id = host + base + extra
-
-            nam = nam + 1
-
-            namc = f"{nam}号线路"
-
-            bofang = bofang + namc + '$' + id + '#'
-
-        bofang = bofang[:-1]
-
-        xianlu = '哔哩专线'
+        lines = self._build_bili_play_lines(did)
+        bofang = '#'.join(f"{name}${url}" for name, url in lines if url)
+        if not bofang:
+            bofang = f"网页嗅探$https://live.bilibili.com/{did}"
 
         videos.append({
             "vod_id": did,
-            "vod_content": content,
-            "vod_play_from": xianlu,
+            "vod_content": '欢迎观看哔哩直播',
+            "vod_play_from": '哔哩专线',
             "vod_play_url": bofang
-                     })
+        })
 
         result['list'] = videos
         return result
 
     def playerContent(self, flag, id, vipFlags):
-
-        result = {}
-        result["parse"] = 0
-        result["playUrl"] = ''
-        result["url"] = id
-        result["header"] = headerx
-        return result
+        url = (id or '').strip()
+        if url.startswith('http') and ('.m3u8' in url or '.flv' in url or 'bilivideo.com' in url):
+            return {"parse": 0, "playUrl": '', "url": url, "header": PLAY_HEADERS}
+        if url.isdigit():
+            lines = self._build_bili_play_lines(url)
+            for _, stream in lines:
+                if stream:
+                    return {"parse": 0, "playUrl": '', "url": stream, "header": PLAY_HEADERS}
+            url = f'https://live.bilibili.com/{url}'
+        return {"parse": 1, "playUrl": '', "url": url, "header": PLAY_HEADERS}
 
     def searchContentPage(self, key, quick, pg):
-        result = {}
-        videos = []
-
         if pg:
             page = int(pg)
         else:
             page = 1
-
         url = f'{xurl}/live?keyword={key}&page={str(page)}'
-        detail = requests.get(url=url, headers=headerx)
+        detail = requests.get(url=url, headers=headerx, timeout=15)
         detail.encoding = "utf-8"
-        res = detail.text
-        doc = BeautifulSoup(res, "lxml")
-
-        soups = doc.find_all('div', class_="video-list-item")
-
-        for vod in soups:
-
-            names = vod.find('h3', class_="bili-live-card__info--tit")
-            name = names.text.strip().replace('直播中', '')
-
-            id = names.find('a')['href']
-            id = self.extract_middle_text(id, 'bilibili.com/', '?', 0)
-
-            pic = vod.find('img')['src']
-            if 'http' not in pic:
-                pic = "https:" + pic
-
-            remarks = vod.find('a', class_="bili-live-card__info--uname")
-            remark = remarks.text.strip()
-
-            video = {
-                "vod_id": id,
-                "vod_name": name,
-                "vod_pic": pic,
-                "vod_remarks": remark
-                    }
-            videos.append(video)
-
-        result['list'] = videos
+        videos = self._parse_live_cards(detail.text)
+        result = {'list': videos}
         result['page'] = pg
         result['pagecount'] = 9999
         result['limit'] = 90

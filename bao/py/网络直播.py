@@ -210,8 +210,10 @@ class Spider(Spider):
         cateManual = {
             "虎牙": "huya",
             "斗鱼": "douyu",
+            "斗鱼体育": "douyu_sport",
             "网易": "wangyi",
-            "B站": "bili"
+            "B站": "bili",
+            "B站体育": "bili_sport",
         }
         classes = []
         filters = {
@@ -251,6 +253,13 @@ class Spider(Spider):
         result['page'] = pg
         result['limit'] = 90
         result['total'] = 999999
+        extend = dict(extend or {})
+        if tid == 'douyu_sport':
+            extend.setdefault('cate', '15')
+            tid = 'douyu'
+        elif tid == 'bili_sport':
+            extend.setdefault('cate', '13')
+            tid = 'bili'
         if tid == 'wangyi':
             vdata, pagecount = self.wyccContent(tid, pg, filter, extend, vdata)
         elif 'bili' in tid:

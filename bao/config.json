@@ -25,6 +25,43 @@
       "changeable": 0
     },
     {
+      "key": "tiyu919",
+      "name": "919看球(体育)",
+      "type": 3,
+      "api": "csp_919Tiyu",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "style": {
+        "type": "list"
+      }
+    },
+    {
+      "key": "tiyu919py",
+      "name": "919看球(py备用)",
+      "type": 3,
+      "api": "./py/919看球.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "style": {
+        "type": "list"
+      }
+    },
+    {
+      "key": "kltvv_tv",
+      "name": "快龙电视(央视/体育)",
+      "type": 3,
+      "api": "./py/快龙电视.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "ext": "http://tv.kltvv.com,http://tv.kltvyg.top,http://43.129.218.15:6666",
+      "style": {
+        "type": "list"
+      }
+    },
+    {
       "key": "guazi",
       "name": "瓜子影视(弹幕)",
       "type": 3,
@@ -753,18 +790,6 @@
       }
     },
     {
-      "key": "kanqiu",
-      "name": "看球",
-      "type": 3,
-      "api": "csp_Kanqiu",
-      "searchable": 1,
-      "quickSearch": 1,
-      "changeable": 0,
-      "style": {
-        "type": "list"
-      }
-    },
-    {
       "key": "tingshijie",
       "name": "听世界",
       "type": 3,
@@ -804,28 +829,6 @@
       "changeable": 1,
       "quickSearch": 1,
       "filterable": 1
-    },
-    {
-      "key": "wlkc",
-      "name": "网络直播(py)",
-      "type": 3,
-      "api": "./py/网络直播.py",
-      "searchable": 0,
-      "changeable": 0,
-      "style": {
-        "type": "list"
-      }
-    },
-    {
-      "key": "bililive",
-      "name": "哔哩直播(py)",
-      "type": 3,
-      "api": "./py/哔哩直播.py",
-      "searchable": 0,
-      "changeable": 0,
-      "style": {
-        "type": "list"
-      }
     },
     {
       "key": "tencent",

@@ -1070,6 +1070,8 @@ def remember_playlist(spider, vod_name="", play_url=""):
             ep = ep.strip()
             spider._ep_map[key] = ep
             _cache_ep_by_key(key, ep, spider)
+    if not PY_ATTACH_DANMU:
+        return
     try:
         _precache_direct_danmu(spider, title, play_url)
     except Exception:
@@ -1086,12 +1088,15 @@ def remember_from_vod(spider, vod):
             if vid:
                 _spider_cache_set(spider, "current_vod_id", str(vid))
             _save_danmu_meta(name, "")
-            _call_jar_process_vod(vod)
+            if PY_ATTACH_DANMU:
+                _call_jar_process_vod(vod)
     except Exception:
         pass
 
 
 def attach_player(spider, result, play_id, flag="", vod_name="", ep_name=""):
+    if not PY_ATTACH_DANMU:
+        return result
     try:
         init_spider_cache(spider)
         return jar_add_danmaku_to_result(
