@@ -1,5 +1,5 @@
 {
-  "spider": "./jar/custom_spider.jar;md5;d33274711650e87dd11f445fffdb667b",
+  "spider": "./jar/custom_spider.jar;md5;7e5ac81d71860e629505fdfc822bfbe3",
   "sites": [
     {
       "key": "douban",
